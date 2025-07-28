@@ -1,114 +1,166 @@
-# Global Git configuration
+# ===================================================================
+# Global Git Configuration
+# ===================================================================
+# This file configures Git globally for all repositories
+# Managed by ChezMoi and applied to ~/.gitconfig
+# Includes modern Git settings, aliases, and tool integrations
+
+# ===================================================================
+# User Identity
+# ===================================================================
+# Configure your identity for commits (REQUIRED - update these values)
 [user]
-  name = Your Name
-  email = your.email@example.com
+  name = Your Name                    # Replace with your actual name
+  email = your.email@example.com      # Replace with your actual email
 
+# ===================================================================
+# Core Settings
+# ===================================================================
 [core]
-  editor = vim
-  autocrlf = input
-  safecrlf = warn
-  pager = delta
-  excludesfile = ~/.gitignore_global
+  editor = vim                        # Default editor for commit messages
+  autocrlf = input                    # Handle line endings properly on Unix systems
+  safecrlf = warn                     # Warn about mixed line endings
+  pager = delta                       # Use delta for better diff viewing
+  excludesfile = ~/.gitignore_global  # Global gitignore file
 
+# ===================================================================
+# Modern Git Defaults
+# ===================================================================
 [init]
-  defaultBranch = main
+  defaultBranch = main               # Use 'main' as default branch name
 
 [push]
-  default = simple
-  autoSetupRemote = true
+  default = simple                   # Only push current branch to upstream
+  autoSetupRemote = true             # Automatically set up remote tracking
 
 [pull]
-  rebase = true
+  rebase = true                      # Always rebase when pulling (cleaner history)
 
 [fetch]
-  prune = true
+  prune = true                       # Remove deleted remote branches automatically
 
 [rebase]
-  autoStash = true
+  autoStash = true                   # Automatically stash/unstash during rebase
 
+# ===================================================================
+# Merge and Diff Configuration
+# ===================================================================
 [merge]
-  tool = vimdiff
-  conflictstyle = diff3
+  tool = vimdiff                     # Use vimdiff for merge conflicts
+  conflictstyle = diff3              # Show original, ours, and theirs in conflicts
 
 [diff]
-  tool = vimdiff
-  colorMoved = default
+  tool = vimdiff                     # Use vimdiff for manual diffs
+  colorMoved = default               # Highlight moved lines in diffs
 
+# ===================================================================
+# Delta Integration (Modern Diff Viewer)
+# ===================================================================
+# Delta is installed via Pixi and provides syntax highlighting for diffs
 [interactive]
-  diffFilter = delta --color-only
+  diffFilter = delta --color-only    # Use delta for interactive diffs
 
 [delta]
-  navigate = true
-  line-numbers = true
-  side-by-side = true
+  navigate = true                    # Enable navigation keybindings
+  line-numbers = true                # Show line numbers
+  side-by-side = true                # Use side-by-side view when space allows
 
+# ===================================================================
+# Git Aliases - Productivity Shortcuts
+# ===================================================================
 [alias]
-  st = status
-  ci = commit
-  br = branch
-  co = checkout
-  df = diff
-  dc = diff --cached
-  lg = log --oneline --graph --decorate --all
+  # ===== Basic Commands =====
+  st = status                        # Quick status
+  ci = commit                        # Quick commit
+  br = branch                        # Quick branch
+  co = checkout                      # Quick checkout
+  df = diff                          # Quick diff
+  dc = diff --cached                 # Diff staged changes
+
+  # ===== Advanced Logging =====
+  lg = log --oneline --graph --decorate --all    # Pretty graph log
   ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
   ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
-  lnc = log --pretty=format:"%h\\ %s\\ [%cn]"
+  lnc = log --pretty=format:"%h\\ %s\\ [%cn]"    # No color log
   lds = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
   ld = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative
-  le = log --oneline --decorate
-  filelog = log -u
-  fl = log -u
-  dl = "!git ll -1"
-  dlc = diff --cached HEAD^
-  dr = "!f() { git diff "$1"^.."$1"; }; f"
-  lc = "!f() { git ll "$1"^.."$1"; }; f"
-  diffr = "!f() { git diff "$1"^.."$1"; }; f"
-  f = "!git ls-files | grep -i"
-  grep = grep -Ii
-  la = "!git config -l | grep alias | cut -c7-"
-  done = "!f() { git branch | grep "$1" | cut -c3- | grep -v done | xargs -I{} git branch -m {} done-{}; }; f"
-  assume = update-index --assume-unchanged
-  unassume = update-index --no-assume-unchanged
-  assumed = "!git ls-files -v | grep ^h | cut -c 3-"
-  unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
-  assumeall = "!git st -s | awk {'print $2'} | xargs git assume"
-  ours = "!f() { git co --ours $@ && git add $@; }; f"
-  theirs = "!f() { git co --theirs $@ && git add $@; }; f"
+  le = log --oneline --decorate      # Minimal log
+  filelog = log -u                   # Show file changes
+  fl = log -u                        # Short for filelog
 
+  # ===== Diff and Review =====
+  dl = "!git ll -1"                  # Show last commit details
+  dlc = diff --cached HEAD^          # Diff last commit cached
+  dr = "!f() { git diff \"$1\"^..\"$1\"; }; f"      # Diff specific commit
+  lc = "!f() { git ll \"$1\"^..\"$1\"; }; f"       # Log specific commit
+  diffr = "!f() { git diff \"$1\"^..\"$1\"; }; f"  # Same as dr
+
+  # ===== Utilities =====
+  f = "!git ls-files | grep -i"     # Find files
+  grep = grep -Ii                    # Case-insensitive grep
+  la = "!git config -l | grep alias | cut -c7-"  # List all aliases
+
+  # ===== Branch Management =====
+  done = "!f() { git branch | grep \"$1\" | cut -c3- | grep -v done | xargs -I{} git branch -m {} done-{}; }; f"
+
+  # ===== Assume Unchanged (Skip Tracking) =====
+  assume = update-index --assume-unchanged       # Stop tracking changes to file
+  unassume = update-index --no-assume-unchanged  # Resume tracking changes
+  assumed = "!git ls-files -v | grep ^h | cut -c 3-"  # List assumed unchanged files
+  unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"  # Resume all
+  assumeall = "!git st -s | awk {'print $2'} | xargs git assume"  # Assume all modified
+
+  # ===== Merge Conflict Resolution =====
+  ours = "!f() { git co --ours $@ && git add $@; }; f"      # Use our version
+  theirs = "!f() { git co --theirs $@ && git add $@; }; f"  # Use their version
+
+# ===================================================================
+# Color Configuration
+# ===================================================================
+# Enable colors for better readability
 [color]
-  ui = auto
-  branch = auto
-  diff = auto
-  status = auto
+  ui = auto                          # Auto-enable colors when outputting to terminal
+  branch = auto                      # Color branch output
+  diff = auto                        # Color diff output
+  status = auto                      # Color status output
 
+# Branch colors
 [color "branch"]
-  current = yellow reverse
-  local = yellow
-  remote = green
+  current = yellow reverse           # Current branch
+  local = yellow                     # Local branches
+  remote = green                     # Remote branches
 
+# Diff colors
+# Diff colors
 [color "diff"]
-  meta = yellow bold
-  frag = magenta bold
-  old = red
-  new = green
+  meta = yellow bold                 # File headers
+  frag = magenta bold                # Hunk headers
+  old = red                          # Removed lines
+  new = green                        # Added lines
 
+# Status colors
 [color "status"]
-  added = yellow
-  changed = green
-  untracked = cyan
+  added = yellow                     # Staged files
+  changed = green                    # Modified files
+  untracked = cyan                   # Untracked files
 
+# ===================================================================
+# URL Shortcuts and Protocols
+# ===================================================================
+# Convenient shortcuts for GitHub operations
 [url "git@github.com:"]
-  insteadOf = "gh:"
-  pushInsteadOf = "github:"
+  insteadOf = "gh:"                  # Use 'gh:user/repo' instead of full URL
+  pushInsteadOf = "github:"          # Always use SSH for pushing
   pushInsteadOf = "git://github.com/"
 
 [url "git://github.com/"]
-  insteadOf = "github:"
+  insteadOf = "github:"              # Use 'github:user/repo' for read-only access
 
+# GitHub Gist shortcuts
 [url "git@gist.github.com:"]
-  insteadOf = "gst:"
-  pushInsteadOf = "gist:"
+  insteadOf = "gst:"                 # Use 'gst:gistid' for SSH gist access
+  pushInsteadOf = "gist:"            # Always use SSH for pushing gists
   pushInsteadOf = "git://gist.github.com/"
 
 [url "git://gist.github.com/"]
-  insteadOf = "gist:"
+  insteadOf = "gist:"                # Use 'gist:gistid' for read-only gist access

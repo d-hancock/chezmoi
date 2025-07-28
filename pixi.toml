@@ -1,52 +1,91 @@
-# Pixi dependencies (provided)
-# Add your dependencies here
+# ===================================================================
+# Pixi Project Configuration
+# ===================================================================
+# This file defines all CLI tools and dependencies for the dotfiles environment
+# Pixi manages these tools using the conda-forge ecosystem, ensuring:
+# - Reproducible installations across machines
+# - Fast, reliable package management
+# - No conflicts with system packages
+# - Automatic environment isolation
+#
+# Usage: 'pixi sync' to install all tools, 'pixi shell' to activate environment
+# Documentation: https://pixi.sh/
+
 [project]
-name = "dotfiles-tools"
-channels = ["conda-forge"]
+name = "dotfiles-tools"              # Project name for this tool collection
+channels = ["conda-forge"]           # Use conda-forge as the primary package source
+
+# ===================================================================
+# Core Dependencies
+# ===================================================================
+# All tools are organized by category for easy maintenance
+# Tools listed here replace traditional Unix utilities with modern alternatives
 
 [dependencies]
-# --- Navigation & Search ---
-fzf = "*"
-ripgrep = "*"
-fd-find = "*"
-bat = "*"
-tldr = "*"
-zoxide = "*"
 
-# --- Prompt & Shell Enhancements ---
-starship = "*"
-atuin = "*"
-direnv = "*"
-mcfly = "*"         # packaged as 'mcfly' on conda-forge
+# ===================================================================
+# Navigation & Search Tools
+# ===================================================================
+# Modern replacements for find, grep, and file navigation
+fzf = "*"                # Fuzzy finder for files, commands, and more
+ripgrep = "*"            # Ultra-fast text search (replaces grep)
+fd-find = "*"            # User-friendly find alternative
+bat = "*"                # Cat with syntax highlighting and git integration
+tldr = "*"               # Simplified man pages with examples
+zoxide = "*"             # Smart cd command that learns your habits
 
-# --- General Utilities ---
-eza = "*"           # modern ls replacement
-duf = "*"
-httpie = "*"
-btop = "*"
-entr = "*"
-ncdu = "*"
-hyperfine = "*"
-curlie = "*"
-tmux = "*"
-htop = "*"
-gitui = "*"
-tig = "*"
-dust = "*"
-bandwhich = "*"
-fx = "*"
+# ===================================================================
+# Prompt & Shell Enhancements
+# ===================================================================
+# Tools that improve the shell experience
+starship = "*"           # Cross-shell prompt (configured in starship.toml)
+atuin = "*"              # Enhanced shell history with search and sync
+direnv = "*"             # Per-directory environment variables
+mcfly = "*"              # Intelligent history search with fuzzy matching
 
-# --- Developer / Data tools ---
-pixi = "*"
-git-delta = "*"
-gh = "*"
-chezmoi = "*"
-just = "*"
-qsv = "*"           # fast CSV toolkit
-jq = "*"
-sd = "*"
-tealdeer = "*"
-xsv = "*"
+# ===================================================================
+# System Utilities
+# ===================================================================
+# Modern replacements for traditional system utilities
+eza = "*"                # Modern ls replacement with git integration and colors
+duf = "*"                # Disk usage/free utility with better output than df
+httpie = "*"             # User-friendly HTTP client
+btop = "*"               # Beautiful system monitor (replaces top/htop)
+entr = "*"               # Run commands when files change
+ncdu = "*"               # NCurses disk usage analyzer
+hyperfine = "*"          # Command-line benchmarking tool
+curlie = "*"             # curl with httpie-like interface
+tmux = "*"               # Terminal multiplexer for session management
+htop = "*"               # Interactive process viewer (fallback to btop)
+gitui = "*"              # Terminal UI for git operations
+tig = "*"                # Text-mode interface for git
+dust = "*"               # More intuitive version of du
+bandwhich = "*"          # Terminal bandwidth utilization tool
+fx = "*"                 # Interactive JSON viewer and processor
 
-# Note: Any tool not yet on conda‑forge (e.g., gum, lazydocker, vipe) should be installed via run_once_setup_tools.sh.tmpl using apt, cargo, or go install until packages become available.
+# ===================================================================
+# Developer & Data Tools
+# ===================================================================
+# Essential tools for development and data processing
+pixi = "*"               # Package manager (self-managed for updates)
+git-delta = "*"          # Syntax-highlighted git diffs
+gh = "*"                 # GitHub CLI for repository management
+chezmoi = "*"            # Dotfile manager (self-managed for updates)
+just = "*"               # Command runner and task automation
+qsv = "*"                # Fast CSV data processing toolkit
+jq = "*"                 # JSON processor and query tool
+sd = "*"                 # Intuitive find & replace CLI (sed alternative)
+tealdeer = "*"           # Fast tldr client for quick help
+xsv = "*"                # CSV command line toolkit
+
+# ===================================================================
+# Installation Notes
+# ===================================================================
+# Tools not yet available in conda-forge are installed via run_once_setup_tools.sh.tmpl
+# using cargo, go install, or other package managers. These include:
+# - gum: Interactive shell utilities
+# - lazydocker: Terminal UI for docker
+# - vipe: Edit pipes interactively
+# 
+# As these tools become available in conda-forge, move them to this file
 

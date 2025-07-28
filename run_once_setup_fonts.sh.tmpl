@@ -1,6 +1,61 @@
 #!/usr/bin/env bash
-set -e
-mkdir -p ~/.local/share/fonts
-curl -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Monaspace.zip -o /tmp/Monaspace.zip
-unzip -o /tmp/Monaspace.zip -d ~/.local/share/fonts/Monaspace
+# ===================================================================
+# ChezMoi Bootstrap Script - Font Installation
+# ===================================================================
+# This script runs once when ChezMoi is first applied
+# It downloads and installs Monaspace Nerd Fonts for terminal use
+# These fonts provide programming ligatures and Nerd Font icons
+# 
+# Execution: Automatically run by ChezMoi on first 'chezmoi apply'
+# Template: This is a .tmpl file, so it can use ChezMoi variables
+
+set -e  # Exit on any error
+
+echo "🔤 Installing Nerd Fonts..."
+
+# ===================================================================
+# Font Directory Setup
+# ===================================================================
+# Create user font directory following Linux standards
+FONT_DIR="$HOME/.local/share/fonts"
+mkdir -p "$FONT_DIR"
+echo "📁 Font directory created: $FONT_DIR"
+
+# ===================================================================
+# Monaspace Nerd Font Download
+# ===================================================================
+# Download Monaspace Nerd Font - a modern coding font with ligatures
+# Version 3.2.1 is stable and well-tested
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Monaspace.zip"
+TEMP_FILE="/tmp/Monaspace.zip"
+EXTRACT_DIR="$FONT_DIR/Monaspace"
+
+echo "⬇️  Downloading Monaspace Nerd Font..."
+curl -L "$FONT_URL" -o "$TEMP_FILE"
+echo "✅ Download complete"
+
+# ===================================================================
+# Font Installation
+# ===================================================================
+# Extract fonts to user font directory
+echo "📦 Extracting fonts..."
+unzip -o "$TEMP_FILE" -d "$EXTRACT_DIR"
+echo "✅ Fonts extracted to $EXTRACT_DIR"
+
+# ===================================================================
+# Font Cache Update
+# ===================================================================
+# Update font cache so the system recognizes new fonts
+echo "🔄 Updating font cache..."
 fc-cache -fv
+echo "✅ Font cache updated"
+
+# ===================================================================
+# Cleanup
+# ===================================================================
+# Remove temporary download file
+rm -f "$TEMP_FILE"
+echo "🧹 Cleanup complete"
+
+echo "🎉 Monaspace Nerd Font installation complete!"
+echo "💡 Restart your terminal to use the new fonts"

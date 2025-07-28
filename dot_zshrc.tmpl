@@ -1,76 +1,154 @@
 #!/usr/bin/env zsh
-# ChezMoi managed .zshrc - Main shell configuration
+# ===================================================================
+# ChezMoi Managed .zshrc - Main Shell Configuration
+# ===================================================================
+# This file is managed by ChezMoi and will be applied to ~/.zshrc
+# It sets up a modern Zsh environment with:
+# - Zinit plugin manager for fast, lazy-loaded plugins
+# - Starship prompt for beautiful, informative prompts
+# - Integration with modern CLI tools (installed via Pixi)
+# - Proper XDG directory compliance
+# - Enhanced history and completion settings
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
+# ===================================================================
+# Powerlevel10k Instant Prompt (Optional)
+# ===================================================================
+# This enables instant prompt if Powerlevel10k is ever used instead of Starship
+# Can be safely ignored when using Starship
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Set up PATH for Pixi and other tools
+# ===================================================================
+# Path Configuration
+# ===================================================================
+# Set up PATH with proper precedence:
+# 1. ~/.pixi/bin - Pixi-managed tools (highest priority)
+# 2. ~/.local/bin - User scripts and locally installed tools
+# 3. System PATH - System and package manager tools
 export PATH="$HOME/.pixi/bin:$HOME/.local/bin:$PATH"
 
+# ===================================================================
 # XDG Base Directory Specification
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
+# ===================================================================
+# Follow XDG standards for cleaner home directory organization
+export XDG_CONFIG_HOME="$HOME/.config"     # Configuration files
+export XDG_DATA_HOME="$HOME/.local/share"  # Data files
+export XDG_CACHE_HOME="$HOME/.cache"       # Cache files
 
-# Zinit installation and setup
+# ===================================================================
+# Zinit Plugin Manager Setup
+# ===================================================================
+# Zinit provides fast, lazy plugin loading for Zsh
+# It downloads and manages plugins automatically
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Create directory structure if it doesn't exist
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+
+# Install Zinit if not already present
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+
+# Load Zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Load Starship prompt
+# ===================================================================
+# Prompt Configuration - Starship
+# ===================================================================
+# Load Starship prompt with completions
+# This downloads Starship as a binary and sets up shell integration
 zinit ice as"command" from"gh-r" \
   atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
   atpull"%atclone" src"init.zsh"
 zinit light starship/starship
 
-# Essential Zsh plugins
+# ===================================================================
+# Essential Zsh Plugins
+# ===================================================================
+# Load core plugins with lazy loading for better startup performance
+# "wait lucid" means plugins load after prompt is ready (non-blocking)
+
 zinit wait lucid for \
   atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-    zdharma-continuum/fast-syntax-highlighting \
+    zdharma-continuum/fast-syntax-highlighting \  # Syntax highlighting as you type
   blockf \
-    zsh-users/zsh-completions \
+    zsh-users/zsh-completions \                   # Additional completion definitions
   atload"!_zsh_autosuggest_start" \
-    zsh-users/zsh-autosuggestions
+    zsh-users/zsh-autosuggestions                 # Fish-like autosuggestions
 
-# Additional useful plugins
+# ===================================================================
+# Additional Useful Plugins
+# ===================================================================
+# Oh My Zsh library functions and plugins for enhanced functionality
 zinit wait lucid for \
-  OMZL::git.zsh \
-  OMZP::git \
-  OMZP::sudo \
-  OMZP::command-not-found
+  OMZL::git.zsh \          # Git helper functions
+  OMZP::git \              # Git aliases and completion
+  OMZP::sudo \             # Double-tap ESC to prefix command with sudo
+  OMZP::command-not-found  # Suggests package installation for missing commands
 
-# History configuration
+# ===================================================================
+# Shell History Configuration
+# ===================================================================
+# Enhanced history settings for better command recall and sharing
 HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/history"
-HISTSIZE=50000
-SAVEHIST=50000
+HISTSIZE=50000    # Number of commands in memory
+SAVEHIST=50000    # Number of commands saved to file
+
+# Create history directory if it doesn't exist
 mkdir -p "$(dirname "$HISTFILE")"
 
-# Zsh options
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_BEEP
-setopt SHARE_HISTORY
-setopt APPEND_HISTORY
-setopt INC_APPEND_HISTORY
-setopt AUTO_CD
-setopt GLOB_DOTS
-setopt EXTENDED_GLOB
+# ===================================================================
+# Zsh Options
+# ===================================================================
+# Configure shell behavior for better usability and history management
 
-# Initialize tools if available
+# History options
+setopt HIST_EXPIRE_DUPS_FIRST  # Delete duplicates first when trimming history
+setopt HIST_IGNORE_DUPS        # Don't record duplicates of previous command
+setopt HIST_IGNORE_ALL_DUPS    # Remove older duplicate when adding command
+setopt HIST_IGNORE_SPACE       # Don't record commands starting with space
+setopt HIST_FIND_NO_DUPS       # Don't display duplicates when searching
+setopt HIST_SAVE_NO_DUPS       # Don't save duplicates to history file
+setopt HIST_BEEP               # Beep when accessing non-existent history
+setopt SHARE_HISTORY           # Share history between all sessions
+setopt APPEND_HISTORY          # Append to history file
+setopt INC_APPEND_HISTORY      # Write to history file immediately
+
+# General options
+setopt AUTO_CD                 # Change directory without typing 'cd'
+setopt GLOB_DOTS               # Include hidden files in glob patterns
+setopt EXTENDED_GLOB           # Enable extended globbing patterns
+
+# ===================================================================
+# Modern Tool Initialization
+# ===================================================================
+# Initialize various CLI tools if they're available (installed via Pixi)
+# These tools enhance the shell experience with better navigation and history
+
+# direnv - Per-directory environment variables
+# Automatically loads .envrc files when entering directories
 command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+
+# zoxide - Smart cd command that learns your habits
+# Use 'z' command for fast directory jumping
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+# atuin - Enhanced shell history with sync capabilities
+# Replaces Ctrl+R with a better search interface
 command -v atuin >/dev/null && eval "$(atuin init zsh)"
+
+# mcfly - Intelligent history search
+# Alternative to atuin, provides fuzzy history search
 command -v mcfly >/dev/null && eval "$(mcfly init zsh)"
 
-# Load modular configurations
+# ===================================================================
+# Modular Configuration Loading
+# ===================================================================
+# Load additional configuration files if they exist
+# This allows for organized, maintainable shell configuration
+
+# Load custom aliases (modern CLI tool replacements, shortcuts)
 [[ -f ~/.config/zsh/aliases.zsh ]] && source ~/.config/zsh/aliases.zsh
+
+# Load completion enhancements and custom completions
 [[ -f ~/.config/zsh/completions.zsh ]] && source ~/.config/zsh/completions.zsh

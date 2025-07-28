@@ -1,2 +1,13 @@
+# ===================================================================
+# ChezMoi Configuration File
+# ===================================================================
+# This file configures ChezMoi behavior and settings
+# ChezMoi manages dotfiles with templating, encryption, and cross-platform support
+# Documentation: https://www.chezmoi.io/user-guide/
+
+# ===================================================================
+# Source Directory Configuration
+# ===================================================================
+# Defines where ChezMoi looks for source files (this repository)
 [source]
-  directory = "~/.local/share/chezmoi"
+  directory = "~/.local/share/chezmoi"  # Standard XDG-compliant location

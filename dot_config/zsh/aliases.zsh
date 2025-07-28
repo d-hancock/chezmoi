@@ -1,89 +1,132 @@
-# Modern CLI tool replacements
+# ===================================================================
+# Modern CLI Tool Aliases
+# ===================================================================
+# This file contains aliases that replace traditional Unix tools with modern,
+# feature-rich alternatives. All tools are managed via Pixi and should be
+# available through the conda-forge ecosystem.
+# Loaded by: ~/.zshrc via source command
+
+# ===================================================================
+# File and Directory Operations
+# ===================================================================
+# Replace 'ls' with 'eza' - modern ls replacement with git integration
 alias ls='eza --color=auto --group-directories-first'
-alias ll='eza -lah --color=auto --group-directories-first'
-alias la='eza -la --color=auto --group-directories-first'
-alias lt='eza --tree --level=2 --color=auto'
-alias l='eza -1 --color=auto'
+alias ll='eza -lah --color=auto --group-directories-first'  # Long format with all files
+alias la='eza -la --color=auto --group-directories-first'   # All files in long format
+alias lt='eza --tree --level=2 --color=auto'                # Tree view (2 levels deep)
+alias l='eza -1 --color=auto'                               # One file per line
 
-alias cat='bat --paging=never'
-alias less='bat --paging=always'
-alias more='bat --paging=always'
+# Replace 'cat' and pagers with 'bat' - syntax highlighting and git integration
+alias cat='bat --paging=never'        # Quick view without paging
+alias less='bat --paging=always'      # Paged view with syntax highlighting
+alias more='bat --paging=always'      # Same as less
 
-alias find='fd'
-alias grep='rg'
-alias ps='procs'
-alias top='btop'
-alias htop='btop'
-alias du='dust'
-alias df='duf'
+# ===================================================================
+# Search and System Tools
+# ===================================================================
+# Modern replacements for common system utilities
+alias find='fd'          # fd - faster, more user-friendly find
+alias grep='rg'          # ripgrep - faster grep with better output
+alias ps='procs'         # procs - modern ps with colors and tree view
+alias top='btop'         # btop - beautiful system monitor
+alias htop='btop'        # Use btop instead of htop
+alias du='dust'          # dust - more intuitive disk usage
+alias df='duf'           # duf - better disk free with colors
 
-# Git aliases
-alias g='git'
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gl='git pull'
-alias gd='git diff'
-alias gb='git branch'
-alias gco='git checkout'
-alias gcb='git checkout -b'
-alias gm='git merge'
-alias gr='git rebase'
-alias glog='git log --oneline --graph --decorate'
+# ===================================================================
+# Git Workflow Aliases
+# ===================================================================
+# Comprehensive Git shortcuts for faster development workflow
+alias g='git'                    # Quick git access
+alias gs='git status'            # Check repository status
+alias ga='git add'               # Stage files
+alias gc='git commit'            # Commit changes
+alias gp='git push'              # Push to remote
+alias gl='git pull'              # Pull from remote
+alias gd='git diff'              # Show differences
+alias gb='git branch'            # List/manage branches
+alias gco='git checkout'         # Switch branches/restore files
+alias gcb='git checkout -b'      # Create and switch to new branch
+alias gm='git merge'             # Merge branches
+alias gr='git rebase'            # Rebase commits
+alias glog='git log --oneline --graph --decorate'  # Pretty log format
 
-# Directory navigation
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-alias ~='cd ~'
-alias -- -='cd -'
+# ===================================================================
+# Directory Navigation
+# ===================================================================
+# Quick navigation shortcuts
+alias ..='cd ..'               # Go up one directory
+alias ...='cd ../..'           # Go up two directories
+alias ....='cd ../../..'       # Go up three directories
+alias .....='cd ../../../..'   # Go up four directories
+alias ~='cd ~'                 # Go to home directory
+alias -- -='cd -'              # Go to previous directory
 
-# System utilities
-alias reload='exec $SHELL'
-alias path='echo -e ${PATH//:/\\n}'
-alias now='date +"%T"'
-alias nowtime=now
-alias nowdate='date +"%d-%m-%Y"'
+# ===================================================================
+# System Utilities
+# ===================================================================
+# Handy system and shell utilities
+alias reload='exec $SHELL'                    # Reload shell configuration
+alias path='echo -e ${PATH//:/\\n}'           # Display PATH components
+alias now='date +"%T"'                       # Current time
+alias nowtime=now                             # Alias for 'now'
+alias nowdate='date +"%d-%m-%Y"'              # Current date (DD-MM-YYYY)
 
-# Networking
-alias ip='ip -color=auto'
-alias ping='ping -c 5'
-alias ports='netstat -tulanp'
-alias myip='curl -s http://whatismyip.akamai.com/'
+# ===================================================================
+# Network Utilities
+# ===================================================================
+# Network diagnostics and information
+alias ip='ip -color=auto'                     # Colorized ip command
+alias ping='ping -c 5'                       # Limit ping to 5 packets
+alias ports='netstat -tulanp'                # Show all listening ports
+alias myip='curl -s http://whatismyip.akamai.com/'  # Get external IP address
 
-# Package management
-alias px='pixi'
-alias pxi='pixi install'
-alias pxr='pixi run'
-alias pxs='pixi shell'
-alias pxa='pixi add'
+# ===================================================================
+# Package Management
+# ===================================================================
+# Shortcuts for Pixi package manager
+alias px='pixi'                              # Quick Pixi access
+alias pxi='pixi install'                     # Install dependencies
+alias pxr='pixi run'                         # Run Pixi task
+alias pxs='pixi shell'                       # Enter Pixi shell
+alias pxa='pixi add'                         # Add new dependency
 
-# ChezMoi shortcuts
-alias cz='chezmoi'
-alias cza='chezmoi apply'
-alias czd='chezmoi diff'
-alias cze='chezmoi edit'
-alias czs='chezmoi status'
-alias czcd='cd $(chezmoi source-path)'
+# ===================================================================
+# ChezMoi Dotfile Management
+# ===================================================================
+# Shortcuts for managing dotfiles with ChezMoi
+alias cz='chezmoi'                            # Quick ChezMoi access
+alias cza='chezmoi apply'                     # Apply changes to home directory
+alias czd='chezmoi diff'                      # Show differences before applying
+alias cze='chezmoi edit'                      # Edit files in ChezMoi source
+alias czs='chezmoi status'                    # Show ChezMoi status
+alias czcd='cd $(chezmoi source-path)'        # Navigate to ChezMoi source directory
 
-# Development shortcuts
-alias j='just'
-alias v='$EDITOR'
-alias vim='$EDITOR'
-alias code='code .'
+# ===================================================================
+# Development Shortcuts
+# ===================================================================
+# Common development tool shortcuts
+alias j='just'                               # Justfile task runner
+alias v='$EDITOR'                            # Open default editor
+alias vim='$EDITOR'                          # Use default editor instead of vim
+alias code='code .'                          # Open current directory in VS Code
 
-# Quick file operations
-alias mkdir='mkdir -pv'
-alias cp='cp -iv'
-alias mv='mv -iv'
-alias rm='rm -iv'
-alias ln='ln -iv'
-alias chmod='chmod -c'
-alias chown='chown -c'
+# ===================================================================
+# File Operations (Enhanced)
+# ===================================================================
+# Safer file operations with confirmations and verbose output
+alias mkdir='mkdir -pv'                      # Create directories with parents, verbose
+alias cp='cp -iv'                            # Interactive and verbose copy
+alias mv='mv -iv'                            # Interactive and verbose move
+alias rm='rm -iv'                            # Interactive and verbose remove
+alias ln='ln -iv'                            # Interactive and verbose link
+alias chmod='chmod -c'                       # Report changes made
+alias chown='chown -c'                       # Report changes made
 
-# Archive extraction
+# ===================================================================
+# Archive and Compression
+# ===================================================================
+# Smart archive extraction function that detects file type
 alias extract='function _extract() { 
   case $1 in 
     *.tar.gz|*.tgz) tar -xzf "$1" ;; 
@@ -96,10 +139,16 @@ alias extract='function _extract() {
   esac 
 }; _extract'
 
-# Quick server
-alias serve='python3 -m http.server 8000'
-alias serve-here='python3 -m http.server 8000'
+# ===================================================================
+# Development and Testing
+# ===================================================================
+# Quick development server and utilities
+alias serve='python3 -m http.server 8000'        # Start HTTP server on port 8000
+alias serve-here='python3 -m http.server 8000'    # Same as above
 
-# Weather
-alias weather='curl -s "wttr.in/?format=3"'
-alias forecast='curl -s "wttr.in/"'
+# ===================================================================
+# Weather and Information
+# ===================================================================
+# Quick weather information using wttr.in service
+alias weather='curl -s "wttr.in/?format=3"'       # Quick weather summary
+alias forecast='curl -s "wttr.in/"'               # Detailed weather forecast

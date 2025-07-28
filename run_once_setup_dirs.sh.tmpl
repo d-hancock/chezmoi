@@ -1,4 +1,82 @@
 #!/usr/bin/env bash
-set -e
-mkdir -p ~/dev
-# Add other directories as needed
+# ===================================================================
+# ChezMoi Bootstrap Script - Directory Structure Setup
+# ===================================================================
+# This script runs once when ChezMoi is first applied
+# It creates a standard directory structure for development work
+# These directories follow common conventions for organizing projects
+# 
+# Execution: Automatically run by ChezMoi on first 'chezmoi apply'
+# Template: This is a .tmpl file, so it can use ChezMoi variables
+
+set -e  # Exit on any error
+
+echo "📁 Setting up directory structure..."
+
+# ===================================================================
+# Development Directories
+# ===================================================================
+# Create standard development directories in home folder
+
+# Main development directory
+DEV_DIR="$HOME/dev"
+mkdir -p "$DEV_DIR"
+echo "✅ Created: $DEV_DIR"
+
+# Projects and workspace directory
+WORKSPACE_DIR="$HOME/workspace"
+mkdir -p "$WORKSPACE_DIR"
+echo "✅ Created: $WORKSPACE_DIR"
+
+# Personal projects directory
+PROJECTS_DIR="$HOME/projects"
+mkdir -p "$PROJECTS_DIR"
+echo "✅ Created: $PROJECTS_DIR"
+
+# Scripts directory (if not using ~/.local/bin)
+SCRIPTS_DIR="$HOME/scripts"
+mkdir -p "$SCRIPTS_DIR"
+echo "✅ Created: $SCRIPTS_DIR"
+
+# Temporary work directory
+TEMP_DIR="$HOME/tmp"
+mkdir -p "$TEMP_DIR"
+echo "✅ Created: $TEMP_DIR"
+
+# ===================================================================
+# Optional Language-Specific Directories
+# ===================================================================
+# Uncomment these if you work with specific languages regularly
+
+# Python projects
+# mkdir -p "$DEV_DIR/python"
+# echo "✅ Created: $DEV_DIR/python"
+
+# JavaScript/Node.js projects
+# mkdir -p "$DEV_DIR/javascript"
+# echo "✅ Created: $DEV_DIR/javascript"
+
+# Rust projects
+# mkdir -p "$DEV_DIR/rust"
+# echo "✅ Created: $DEV_DIR/rust"
+
+# Go projects
+# mkdir -p "$DEV_DIR/go"
+# echo "✅ Created: $DEV_DIR/go"
+
+# ===================================================================
+# Git Repositories Directory
+# ===================================================================
+# Directory for cloned repositories
+REPOS_DIR="$DEV_DIR/repos"
+mkdir -p "$REPOS_DIR"
+echo "✅ Created: $REPOS_DIR"
+
+echo "🎉 Directory structure setup complete!"
+echo "📂 Available directories:"
+echo "   - $DEV_DIR (main development)"
+echo "   - $WORKSPACE_DIR (active projects)"
+echo "   - $PROJECTS_DIR (personal projects)"
+echo "   - $SCRIPTS_DIR (custom scripts)"
+echo "   - $REPOS_DIR (git repositories)"
+echo "   - $TEMP_DIR (temporary files)"

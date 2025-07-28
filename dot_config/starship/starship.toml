@@ -1,8 +1,19 @@
-# Starship prompt configuration
+# ===================================================================
+# Starship Prompt Configuration
+# ===================================================================
+# This file configures the Starship cross-shell prompt
+# Starship is initialized in dot_zshrc.tmpl via Zinit
+# Documentation: https://starship.rs/config/
+
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Use custom format
+# ===================================================================
+# Main Prompt Format
+# ===================================================================
+# This defines the overall structure of the prompt using a powerline-style
+# format with colored segments that flow into each other
+# Each segment is a module (os, username, directory, etc.)
 format = """
 [](color_orange)\
 $os\
@@ -30,24 +41,37 @@ $time\
 [ ](fg:color_bg1)\
 $line_break$character"""
 
+# ===================================================================
+# Color Palette
+# ===================================================================
+# Using Gruvbox Dark theme for consistency with terminal colors
+# These colors create a warm, readable prompt that works well in dark terminals
 palette = 'gruvbox_dark'
 
 [palettes.gruvbox_dark]
-color_fg0 = '#fbf1c7'
-color_bg1 = '#3c3836'
-color_bg3 = '#665c54'
-color_blue = '#458588'
-color_aqua = '#689d6a'
-color_green = '#98971a'
-color_orange = '#d65d0e'
-color_purple = '#b16286'
-color_red = '#cc241d'
-color_yellow = '#d79921'
+color_fg0 = '#fbf1c7'    # Light cream - main text color
+color_bg1 = '#3c3836'    # Dark gray - background elements
+color_bg3 = '#665c54'    # Medium gray - secondary backgrounds
+color_blue = '#458588'   # Blue - programming languages
+color_aqua = '#689d6a'   # Teal - git information
+color_green = '#98971a'  # Green - success states
+color_orange = '#d65d0e' # Orange - user/system info
+color_purple = '#b16286' # Purple - special modes
+color_red = '#cc241d'    # Red - error states
+color_yellow = '#d79921' # Yellow - directory/path
 
+# ===================================================================
+# System Information Modules
+# ===================================================================
+
+# Operating System Display
+# Shows the OS icon in the first segment of the prompt
 [os]
 disabled = false
 style = "bg:color_orange fg:color_fg0"
 
+# OS Symbol Mappings
+# Nerd Font icons for different operating systems
 [os.symbols]
 Windows = "󰍲"
 Ubuntu = "󰕈"
@@ -69,18 +93,28 @@ Debian = "󰣚"
 Redhat = "󱄛"
 RedHatEnterprise = "󱄛"
 
+# Username Display
+# Always shows the current user (useful for SSH sessions)
 [username]
 show_always = true
 style_user = "bg:color_orange fg:color_fg0"
 style_root = "bg:color_orange fg:color_fg0"
 format = '[ $user ]($style)'
 
+# ===================================================================
+# Directory and Navigation
+# ===================================================================
+
+# Current Directory Display
+# Shows current path with intelligent truncation
 [directory]
 style = "fg:color_fg0 bg:color_yellow"
 format = "[ $path ]($style)"
-truncation_length = 3
-truncation_symbol = "…/"
+truncation_length = 3        # Show max 3 directory levels
+truncation_symbol = "…/"     # Symbol for truncated paths
 
+# Directory Icon Substitutions
+# Replace common directory names with meaningful icons
 [directory.substitutions]
 "Documents" = "󰈙 "
 "Downloads" = " "
@@ -88,95 +122,141 @@ truncation_symbol = "…/"
 "Pictures" = " "
 "Developer" = "󰲋 "
 
+# ===================================================================
+# Git Integration
+# ===================================================================
+
+# Git Branch Information
+# Shows current branch with git icon
 [git_branch]
-symbol = ""
+symbol = ""              # Git branch icon
 style = "bg:color_aqua"
 format = '[[ $symbol $branch ](fg:color_fg0 bg:color_aqua)]($style)'
 
+# Git Status Indicators
+# Shows working directory status (modified files, staged changes, etc.)
 [git_status]
 style = "bg:color_aqua"
 format = '[[($all_status$ahead_behind )](fg:color_fg0 bg:color_aqua)]($style)'
 
+# ===================================================================
+# Programming Language Detection
+# ===================================================================
+# These modules detect project types and show language/runtime versions
+# Only displayed when relevant files are present in the current directory
+
+# Node.js Projects (package.json, .nvmrc, etc.)
 [nodejs]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# C/C++ Projects (CMakeLists.txt, Makefile, etc.)
 [c]
 symbol = " "
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# Rust Projects (Cargo.toml)
 [rust]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# Go Projects (go.mod, go.sum)
 [golang]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# PHP Projects (composer.json)
 [php]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# Java Projects (pom.xml, build.gradle)
 [java]
 symbol = " "
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# Kotlin Projects
 [kotlin]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# Haskell Projects (stack.yaml, cabal files)
 [haskell]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# Python Projects (requirements.txt, pyproject.toml, etc.)
 [python]
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 
+# ===================================================================
+# Container and Environment Detection
+# ===================================================================
+
+# Docker Context
+# Shows active Docker context when using Docker
 [docker_context]
 symbol = ""
 style = "bg:color_bg3"
 format = '[[ $symbol( $context) ](fg:#83a598 bg:color_bg3)]($style)'
 
+# Conda Environment
+# Shows active Conda environment (integrates with Pixi)
 [conda]
 style = "bg:color_bg3"
 format = '[[ $symbol( $environment) ](fg:#83a598 bg:color_bg3)]($style)'
 
+# ===================================================================
+# Time and Command Status
+# ===================================================================
+
+# Time Display
+# Shows current time in HH:MM format
 [time]
 disabled = false
-time_format = "%R"
+time_format = "%R"           # 24-hour format (HH:MM)
 style = "bg:color_bg1"
 format = '[[  $time ](fg:color_fg0 bg:color_bg1)]($style)'
 
+# Line Break
+# Forces prompt to span multiple lines for better readability
 [line_break]
 disabled = false
 
+# Command Status Indicator
+# Changes based on last command success/failure and shell mode
 [character]
 disabled = false
-success_symbol = '[](bold fg:color_green)'
-error_symbol = '[](bold fg:color_red)'
-vimcmd_symbol = '[](bold fg:color_green)'
-vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
-vimcmd_replace_symbol = '[](bold fg:color_purple)'
-vimcmd_visual_symbol = '[](bold fg:color_yellow)'
+success_symbol = '[](bold fg:color_green)'           # Green arrow for successful commands
+error_symbol = '[](bold fg:color_red)'              # Red arrow for failed commands
+vimcmd_symbol = '[](bold fg:color_green)'           # Normal mode in vi-mode
+vimcmd_replace_one_symbol = '[](bold fg:color_purple)' # Replace-one mode in vi-mode
+vimcmd_replace_symbol = '[](bold fg:color_purple)'     # Replace mode in vi-mode
+vimcmd_visual_symbol = '[](bold fg:color_yellow)'      # Visual mode in vi-mode
 
-# Disable modules that might be too verbose
+# ===================================================================
+# Module Customization
+# ===================================================================
+
+# Disable verbose modules that might clutter the prompt
 [package]
-disabled = true
+disabled = true              # Don't show package.json version in every Node project
 
-# Pixi environment display
+# Custom Pixi Environment Display
+# Shows active Pixi environment name when inside a Pixi project
 [custom.pixi]
-command = "echo $PIXI_ENVIRONMENT_NAME"
-when = '[ "$PIXI_ENVIRONMENT_NAME" ]'
-symbol = "🅿️ "
+command = "echo $PIXI_ENVIRONMENT_NAME"    # Get environment name from env var
+when = '[ "$PIXI_ENVIRONMENT_NAME" ]'      # Only show when variable is set
+symbol = "🅿️ "                            # Pixi icon
 style = "bold blue"
 format = "[$symbol$output]($style) "

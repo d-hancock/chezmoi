@@ -1,12 +1,54 @@
 #!/usr/bin/env bash
-set -e
-# Install Pixi
+# ===================================================================
+# ChezMoi Bootstrap Script - Tool Installation
+# ===================================================================
+# This script runs once when ChezMoi is first applied
+# It installs Pixi package manager and synchronizes all CLI tools
+# defined in pixi.toml, plus fallback installations for tools
+# not available in conda-forge
+# 
+# Execution: Automatically run by ChezMoi on first 'chezmoi apply'
+# Template: This is a .tmpl file, so it can use ChezMoi variables
+
+set -e  # Exit on any error
+
+echo "🚀 Setting up development tools..."
+
+# ===================================================================
+# Pixi Installation
+# ===================================================================
+# Install Pixi if it's not already available
+# Pixi manages most of our CLI tools via conda-forge ecosystem
 if ! command -v pixi >/dev/null; then
+  echo "📦 Installing Pixi package manager..."
   curl -sSf https://pixi.sh/install.sh | bash
+  echo "✅ Pixi installed successfully"
+else
+  echo "✅ Pixi already installed"
 fi
+
+# ===================================================================
+# Environment Setup
+# ===================================================================
+# Ensure Pixi is available in current session
 export PATH="$HOME/.pixi/bin:$PATH"
-# Sync packages
+
+# ===================================================================
+# Package Synchronization
+# ===================================================================
+# Navigate to ChezMoi source directory and sync packages
+echo "📋 Synchronizing packages from pixi.toml..."
 cd "$(chezmoi source-path)"
 pixi sync
-# Fallback installs for tools not in conda-forge (edit list as needed)
+echo "✅ Pixi packages synchronized"
+
+# ===================================================================
+# Fallback Installations
+# ===================================================================
+# Install tools not yet available in conda-forge using cargo
+# These will be moved to pixi.toml as packages become available
+echo "🦀 Installing additional tools via cargo..."
 cargo install gum lazydocker vipe || true
+echo "✅ Additional tools installed"
+
+echo "🎉 Tool setup complete!"
