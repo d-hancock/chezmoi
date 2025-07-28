@@ -87,8 +87,12 @@ alias myip='curl -s http://whatismyip.akamai.com/'  # Get external IP address
 # Shortcuts for Pixi package manager
 alias px='pixi'                              # Quick Pixi access
 alias pxi='pixi install'                     # Install dependencies
+alias pxid='pixi install --environment default'  # Install default tools only
+alias pxidev='pixi install --environment dev'    # Install dev tools
 alias pxr='pixi run'                         # Run Pixi task
 alias pxs='pixi shell'                       # Enter Pixi shell
+alias pxsd='pixi shell --environment default'    # Enter default environment
+alias pxsdev='pixi shell --environment dev'      # Enter dev environment
 alias pxa='pixi add'                         # Add new dependency
 
 # ===================================================================

@@ -1,0 +1,41 @@
+# ===================================================================
+# ChezMoi Ignore Configuration
+# ===================================================================
+# Files and directories that ChezMoi should ignore when managing dotfiles
+# These are typically generated files, caches, or system-specific content
+
+# ===================================================================
+# Pixi-Related Files
+# ===================================================================
+# Pixi generates lock files and cache directories that should not be tracked
+pixi.lock                    # Pixi lock file (generated, should not be in source control)
+.pixi/                       # Pixi cache and environment directory
+
+# ===================================================================
+# Development and Build Artifacts
+# ===================================================================
+*.log                        # Log files
+*.tmp                        # Temporary files
+.DS_Store                    # macOS system files
+Thumbs.db                    # Windows system files
+
+# ===================================================================
+# Editor and IDE Files
+# ===================================================================
+.vscode/                     # VS Code workspace settings (user-specific)
+.idea/                       # IntelliJ IDEA settings
+*.swp                        # Vim swap files
+*.swo                        # Vim swap files
+*~                           # Backup files
+
+# ===================================================================
+# Git and Version Control
+# ===================================================================
+.git/                        # Git repository metadata (handled separately)
+
+# ===================================================================
+# System and Shell History
+# ===================================================================
+.zsh_history                 # Zsh command history (contains sensitive info)
+.bash_history               # Bash command history
+.lesshst                    # Less history file

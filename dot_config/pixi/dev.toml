@@ -1,0 +1,16 @@
+# ===================================================================
+# Development Profile Documentation
+# ===================================================================
+# This file documents the development profile configuration
+# The actual configuration is defined in the main pixi.toml file
+#
+# Dev profile includes all default tools PLUS:
+# - Developer & Data Tools (pixi, git-delta, gh, just, qsv, xsv, gitui, tig)
+# - Network & Monitoring Tools (httpie, curlie, bandwhich, fx)
+# - Performance & Benchmarking (hyperfine, entr, htop)
+#
+# Usage:
+# - pixi install --environment dev
+# - pixi shell --environment dev
+#
+# Note: The dev environment automatically includes all tools from the default profile

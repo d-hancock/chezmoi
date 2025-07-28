@@ -1,32 +1,25 @@
 # ===================================================================
-# Pixi Project Configuration
+# Pixi Profile-Based Configuration
 # ===================================================================
-# This file defines all CLI tools and dependencies for the dotfiles environment
-# Pixi manages these tools using the conda-forge ecosystem, ensuring:
-# - Reproducible installations across machines
-# - Fast, reliable package management
-# - No conflicts with system packages
-# - Automatic environment isolation
+# This file defines different tool profiles for various use cases
+# Profiles allow selective installation of tool sets based on needs
 #
-# Usage: 'pixi sync' to install all tools, 'pixi shell' to activate environment
+# Usage:
+# - pixi install --environment default  # Install base tools only  
+# - pixi install --environment dev      # Install development tools
+# - pixi shell --environment dev        # Activate development environment
+#
 # Documentation: https://pixi.sh/
 
 [project]
-name = "dotfiles-tools"              # Project name for this tool collection
-channels = ["conda-forge"]           # Use conda-forge as the primary package source
+name = "dotfiles-tools"
+channels = ["conda-forge"]
 
 # ===================================================================
-# Core Dependencies
+# Default Profile - Essential Tools
 # ===================================================================
-# All tools are organized by category for easy maintenance
-# Tools listed here replace traditional Unix utilities with modern alternatives
-
-[dependencies]
-
-# ===================================================================
+[feature.default.dependencies]
 # Navigation & Search Tools
-# ===================================================================
-# Modern replacements for find, grep, and file navigation
 fzf = "*"                # Fuzzy finder for files, commands, and more
 ripgrep = "*"            # Ultra-fast text search (replaces grep)
 fd-find = "*"            # User-friendly find alternative
@@ -34,49 +27,57 @@ bat = "*"                # Cat with syntax highlighting and git integration
 tldr = "*"               # Simplified man pages with examples
 zoxide = "*"             # Smart cd command that learns your habits
 
-# ===================================================================
 # Prompt & Shell Enhancements
-# ===================================================================
-# Tools that improve the shell experience
 starship = "*"           # Cross-shell prompt (configured in starship.toml)
 atuin = "*"              # Enhanced shell history with search and sync
 direnv = "*"             # Per-directory environment variables
 mcfly = "*"              # Intelligent history search with fuzzy matching
 
-# ===================================================================
 # System Utilities
-# ===================================================================
-# Modern replacements for traditional system utilities
-eza = "*"                # Modern ls replacement with git integration and colors
-duf = "*"                # Disk usage/free utility with better output than df
-httpie = "*"             # User-friendly HTTP client
+eza = "*"                # Modern ls replacement with git integration
+duf = "*"                # Disk usage/free utility with better output
 btop = "*"               # Beautiful system monitor (replaces top/htop)
-entr = "*"               # Run commands when files change
 ncdu = "*"               # NCurses disk usage analyzer
-hyperfine = "*"          # Command-line benchmarking tool
-curlie = "*"             # curl with httpie-like interface
 tmux = "*"               # Terminal multiplexer for session management
-htop = "*"               # Interactive process viewer (fallback to btop)
-gitui = "*"              # Terminal UI for git operations
-tig = "*"                # Text-mode interface for git
 dust = "*"               # More intuitive version of du
-bandwhich = "*"          # Terminal bandwidth utilization tool
-fx = "*"                 # Interactive JSON viewer and processor
 
-# ===================================================================
-# Developer & Data Tools
-# ===================================================================
-# Essential tools for development and data processing
-pixi = "*"               # Package manager (self-managed for updates)
-git-delta = "*"          # Syntax-highlighted git diffs
-gh = "*"                 # GitHub CLI for repository management
-chezmoi = "*"            # Dotfile manager (self-managed for updates)
-just = "*"               # Command runner and task automation
-qsv = "*"                # Fast CSV data processing toolkit
+# Essential Tools
+chezmoi = "*"            # Dotfile manager
 jq = "*"                 # JSON processor and query tool
 sd = "*"                 # Intuitive find & replace CLI (sed alternative)
 tealdeer = "*"           # Fast tldr client for quick help
+
+# ===================================================================
+# Development Profile - Additional Dev Tools
+# ===================================================================
+[feature.dev.dependencies]
+# Developer & Data Tools
+pixi = "*"               # Package manager (self-managed for updates)
+git-delta = "*"          # Syntax-highlighted git diffs
+gh = "*"                 # GitHub CLI for repository management
+just = "*"               # Command runner and task automation
+qsv = "*"                # Fast CSV data processing toolkit
 xsv = "*"                # CSV command line toolkit
+gitui = "*"              # Terminal UI for git operations
+tig = "*"                # Text-mode interface for git
+
+# Network & Monitoring Tools
+httpie = "*"             # User-friendly HTTP client
+curlie = "*"             # curl with httpie-like interface
+bandwhich = "*"          # Terminal bandwidth utilization tool
+fx = "*"                 # Interactive JSON viewer and processor
+
+# Performance & Benchmarking
+hyperfine = "*"          # Command-line benchmarking tool
+entr = "*"               # Run commands when files change
+htop = "*"               # Interactive process viewer (fallback to btop)
+
+# ===================================================================
+# Environment Definitions
+# ===================================================================
+[environments]
+default = ["default"]
+dev = ["default", "dev"]
 
 # ===================================================================
 # Installation Notes
@@ -87,5 +88,5 @@ xsv = "*"                # CSV command line toolkit
 # - lazydocker: Terminal UI for docker
 # - vipe: Edit pipes interactively
 # 
-# As these tools become available in conda-forge, move them to this file
+# As these tools become available in conda-forge, move them to the appropriate profile
 

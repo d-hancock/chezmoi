@@ -1,0 +1,15 @@
+# ===================================================================
+# Default Profile Documentation
+# ===================================================================
+# This file documents the default profile configuration
+# The actual configuration is defined in the main pixi.toml file
+#
+# Default profile includes:
+# - Navigation & Search Tools (fzf, ripgrep, fd-find, bat, tldr, zoxide)
+# - Prompt & Shell Enhancements (starship, atuin, direnv, mcfly)
+# - System Utilities (eza, duf, btop, ncdu, tmux, dust)
+# - Essential Tools (chezmoi, jq, sd, tealdeer)
+#
+# Usage:
+# - pixi install --environment default
+# - pixi shell --environment default
