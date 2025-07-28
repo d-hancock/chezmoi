@@ -1,0 +1,15 @@
+# Neovim Backup Directory
+
+This directory is automatically created by Neovim configuration to store backup files.
+
+## Purpose
+- **Backup Files**: Stores backup copies of files before editing
+- **Data Safety**: Provides recovery options for edited files
+- **Organization**: Keeps backup files separate from working directories
+
+## Management
+- Automatically managed by Neovim
+- Files are cleaned up based on configuration settings
+- No manual intervention needed
+
+This directory exists to ensure the backup directory structure is maintained in the repository.

@@ -1,0 +1,26 @@
+-- ===================================================================
+-- Local Neovim Configuration
+-- ===================================================================
+-- This file is for machine-specific Neovim customizations
+-- It's loaded automatically by init.lua and ignored by ChezMoi
+-- Add any local settings, plugins, or customizations here
+
+-- Example: Machine-specific settings
+-- vim.opt.relativenumber = false  -- Disable relative numbers on slow machines
+-- vim.opt.cursorline = false      -- Disable cursor line highlighting
+
+-- Example: Local color scheme override
+-- vim.cmd('colorscheme tokyonight')
+
+-- Example: Local plugin setup (if using a plugin manager)
+-- require('local.plugins')
+
+-- Example: Development-specific settings
+-- if vim.fn.isdirectory('node_modules') == 1 then
+--     vim.opt.path:append('node_modules/.bin')
+-- end
+
+-- Example: Project-specific key mappings
+-- vim.keymap.set('n', '<leader>t', ':!npm test<CR>', {desc = 'Run tests'})
+
+-- Add your local customizations below this line

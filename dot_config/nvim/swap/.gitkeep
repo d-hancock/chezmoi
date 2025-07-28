@@ -1,0 +1,15 @@
+# Neovim Swap Directory
+
+This directory is automatically created by Neovim configuration to store swap files.
+
+## Purpose
+- **Swap Files**: Stores temporary swap files during editing
+- **Crash Recovery**: Enables recovery of unsaved changes after crashes
+- **Performance**: Optimizes memory usage during large file editing
+
+## Management
+- Automatically managed by Neovim
+- Swap files are typically temporary and cleaned up on normal exit
+- Recovery prompts appear if swap files exist from previous crashes
+
+This directory exists to ensure the swap directory structure is maintained in the repository.

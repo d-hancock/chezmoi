@@ -156,10 +156,12 @@ command -v mcfly >/dev/null && eval "$(mcfly init zsh)"
 # Load completion enhancements and custom completions
 [[ -f ~/.config/zsh/completions.zsh ]] && source ~/.config/zsh/completions.zsh
 
-# Source Zinit plugins
-source "$HOME/.config/zsh/plugins.zsh"
+# Source additional Zinit plugins (if file exists)
+[[ -f ~/.config/zsh/plugins.zsh ]] && source ~/.config/zsh/plugins.zsh
 
-# Source all functions
-for func in "$HOME/.config/zsh/functions"/*.zsh; do
-  source "$func"
-done
+# Source all functions (with safety check for directory)
+if [[ -d ~/.config/zsh/functions ]]; then
+  for func in ~/.config/zsh/functions/*.zsh; do
+    [[ -r "$func" ]] && source "$func"
+  done
+fi

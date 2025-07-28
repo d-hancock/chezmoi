@@ -1,0 +1,68 @@
+{
+    "Shebang for Python": {
+        "prefix": "shebang-python",
+        "body": [
+            "#!/usr/bin/env python3",
+            "$0"
+        ],
+        "description": "Python shebang line"
+    },
+    "Shebang for Bash": {
+        "prefix": "shebang-bash",
+        "body": [
+            "#!/usr/bin/env bash",
+            "$0"
+        ],
+        "description": "Bash shebang line"
+    },
+    "Python main guard": {
+        "prefix": "main",
+        "body": [
+            "if __name__ == \"__main__\":",
+            "    $0"
+        ],
+        "description": "Python main execution guard"
+    },
+    "Python function with docstring": {
+        "prefix": "def",
+        "body": [
+            "def ${1:function_name}(${2:args}):",
+            "    \"\"\"${3:Description}",
+            "    ",
+            "    Args:",
+            "        ${4:arg_description}",
+            "    ",
+            "    Returns:",
+            "        ${5:return_description}",
+            "    \"\"\"",
+            "    ${0:pass}"
+        ],
+        "description": "Python function with docstring"
+    },
+    "Python class": {
+        "prefix": "class",
+        "body": [
+            "class ${1:ClassName}:",
+            "    \"\"\"${2:Class description}\"\"\"",
+            "    ",
+            "    def __init__(self${3:, args}):",
+            "        \"\"\"Initialize ${1:ClassName}.",
+            "        ",
+            "        Args:",
+            "            ${4:arg_description}",
+            "        \"\"\"",
+            "        ${0:pass}"
+        ],
+        "description": "Python class with docstring"
+    },
+    "Python try-except": {
+        "prefix": "try",
+        "body": [
+            "try:",
+            "    ${1:pass}",
+            "except ${2:Exception} as ${3:e}:",
+            "    ${0:pass}"
+        ],
+        "description": "Python try-except block"
+    }
+}

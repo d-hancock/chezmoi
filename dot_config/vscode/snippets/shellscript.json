@@ -1,0 +1,73 @@
+{
+    "Bash script header": {
+        "prefix": "bash-header",
+        "body": [
+            "#!/usr/bin/env bash",
+            "# ===================================================================",
+            "# ${1:Script Name}",
+            "# ===================================================================",
+            "# ${2:Description}",
+            "",
+            "set -euo pipefail  # Exit on error, undefined vars, pipe failures",
+            "",
+            "${0:# Script content}"
+        ],
+        "description": "Bash script header with best practices"
+    },
+    "Bash function": {
+        "prefix": "function",
+        "body": [
+            "${1:function_name}() {",
+            "    # ${2:Description}",
+            "    local ${3:var_name}=\"${4:value}\"",
+            "    ",
+            "    ${0:# Function body}",
+            "}"
+        ],
+        "description": "Bash function template"
+    },
+    "Bash if statement": {
+        "prefix": "if",
+        "body": [
+            "if [[ ${1:condition} ]]; then",
+            "    ${0:# commands}",
+            "fi"
+        ],
+        "description": "Bash if statement"
+    },
+    "Bash for loop": {
+        "prefix": "for",
+        "body": [
+            "for ${1:item} in ${2:list}; do",
+            "    ${0:# commands}",
+            "done"
+        ],
+        "description": "Bash for loop"
+    },
+    "Bash while loop": {
+        "prefix": "while",
+        "body": [
+            "while ${1:condition}; do",
+            "    ${0:# commands}",
+            "done"
+        ],
+        "description": "Bash while loop"
+    },
+    "Bash case statement": {
+        "prefix": "case",
+        "body": [
+            "case ${1:variable} in",
+            "    ${2:pattern1})",
+            "        ${3:# commands}",
+            "        ;;",
+            "    ${4:pattern2})",
+            "        ${5:# commands}",
+            "        ;;",
+            "    *)",
+            "        ${0:# default case}",
+            "        ;;",
+            "esac"
+        ],
+        "description": "Bash case statement"
+    }
+}

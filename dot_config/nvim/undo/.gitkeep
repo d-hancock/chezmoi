@@ -1,0 +1,15 @@
+# Neovim Undo Directory
+
+This directory is automatically created by Neovim configuration to store persistent undo files.
+
+## Purpose
+- **Persistent Undo**: Maintains undo history between editing sessions
+- **Data Recovery**: Allows undoing changes even after reopening files
+- **Enhanced Workflow**: Provides advanced undo capabilities across sessions
+
+## Management
+- Automatically managed by Neovim
+- Undo files persist until manually deleted or configuration changes
+- Provides powerful undo/redo capabilities across file close/reopen cycles
+
+This directory exists to ensure the undo directory structure is maintained in the repository.
