@@ -147,6 +147,9 @@ command -v mcfly >/dev/null && eval "$(mcfly init zsh)"
 # Load additional configuration files if they exist
 # This allows for organized, maintainable shell configuration
 
+# Load terminal compatibility settings first (WSL2, VS Code, Windows Terminal)
+[[ -f ~/.config/zsh/terminal-compat.zsh ]] && source ~/.config/zsh/terminal-compat.zsh
+
 # Load custom aliases (modern CLI tool replacements, shortcuts)
 [[ -f ~/.config/zsh/aliases.zsh ]] && source ~/.config/zsh/aliases.zsh
 

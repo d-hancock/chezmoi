@@ -1,0 +1,164 @@
+{{- if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+set -e
+
+echo "🔧 Setting up WSL2 and terminal compatibility..."
+
+# ===================================================================
+# WSL2 Detection and Setup
+# ===================================================================
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    echo "📟 WSL2 environment detected: $WSL_DISTRO_NAME"
+    
+    # Install clipboard utilities for WSL2
+    if command -v apt >/dev/null 2>&1; then
+        if ! command -v xclip >/dev/null 2>&1; then
+            echo "📋 Installing clipboard utilities..."
+            sudo apt update
+            sudo apt install -y xclip wl-clipboard
+        fi
+    fi
+    
+    # Install wslu for better WSL integration (if not present)
+    if ! command -v wslview >/dev/null 2>&1; then
+        echo "🔗 Installing WSL utilities..."
+        if command -v apt >/dev/null 2>&1; then
+            sudo apt install -y wslu
+        fi
+    fi
+else
+    echo "🐧 Standard Linux environment detected"
+    
+    # Install clipboard utilities for standard Linux
+    if command -v apt >/dev/null 2>&1; then
+        if ! command -v xclip >/dev/null 2>&1 && ! command -v wl-copy >/dev/null 2>&1; then
+            echo "📋 Installing clipboard utilities..."
+            sudo apt update
+            
+            # Try to detect if we're on Wayland or X11
+            if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+                sudo apt install -y wl-clipboard
+            else
+                sudo apt install -y xclip
+            fi
+        fi
+    fi
+fi
+
+# ===================================================================
+# Git Configuration for Cross-Platform Compatibility
+# ===================================================================
+echo "🔧 Configuring Git for cross-platform compatibility..."
+
+# Configure line endings for cross-platform compatibility
+git config --global core.autocrlf false
+git config --global core.filemode false
+
+# Set safe directory for Git (helps with WSL2 permission issues)
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    # Add common Windows directories as safe (if they exist)
+    for dir in "/mnt/c/Users/$USER" "/mnt/c/dev" "/mnt/c/workspace"; do
+        if [[ -d "$dir" ]]; then
+            git config --global --add safe.directory "$dir"
+        fi
+    done
+fi
+
+# ===================================================================
+# Shell Configuration
+# ===================================================================
+# Set Zsh as default shell if not already set
+current_shell=$(getent passwd "$USER" | cut -d: -f7)
+zsh_path=$(which zsh)
+
+if [[ "$current_shell" != "$zsh_path" ]]; then
+    echo "🐚 Setting Zsh as default shell..."
+    echo "Current shell: $current_shell"
+    echo "Zsh path: $zsh_path"
+    
+    if command -v chsh >/dev/null 2>&1; then
+        chsh -s "$zsh_path"
+        echo "✅ Shell changed to Zsh. Please restart your terminal or log out/in for changes to take effect."
+    else
+        echo "⚠️  chsh command not available. Please manually set Zsh as your default shell."
+    fi
+fi
+
+# ===================================================================
+# Font Installation Verification
+# ===================================================================
+echo "🔤 Verifying font installation..."
+
+font_dir="$HOME/.local/share/fonts"
+if [[ -d "$font_dir" ]] && ls "$font_dir"/*Nerd* >/dev/null 2>&1; then
+    echo "✅ Nerd Fonts found in $font_dir"
+else
+    echo "⚠️  Nerd Fonts not found. Font setup script may need to run."
+fi
+
+# ===================================================================
+# Terminal Compatibility Testing
+# ===================================================================
+echo "🧪 Testing terminal compatibility..."
+
+# Test Unicode support
+echo "Testing Unicode support: 🚀 ⚡ 📁 🐍 ✅"
+
+# Test 256 color support
+if [[ "$TERM" =~ "256color" ]] || [[ "$COLORTERM" == "truecolor" ]]; then
+    echo "✅ 256-color support detected"
+else
+    echo "⚠️  Limited color support detected. Terminal may need configuration."
+fi
+
+# Test clipboard functionality
+if command -v pbcopy >/dev/null 2>&1; then
+    echo "test" | pbcopy 2>/dev/null && echo "✅ Clipboard integration working" || echo "⚠️  Clipboard integration may have issues"
+else
+    echo "⚠️  Clipboard commands not available"
+fi
+
+# ===================================================================
+# VS Code Integration
+# ===================================================================
+if command -v code >/dev/null 2>&1; then
+    echo "📝 VS Code detected - integration ready"
+    
+    # Create VS Code settings directory if it doesn't exist
+    vscode_dir="$HOME/.config/Code/User"
+    mkdir -p "$vscode_dir"
+    
+    echo "💡 VS Code settings will be applied via ChezMoi"
+else
+    echo "📝 VS Code not detected - skipping VS Code integration"
+fi
+
+# ===================================================================
+# Final Setup Instructions
+# ===================================================================
+echo ""
+echo "🎉 Terminal compatibility setup complete!"
+echo ""
+echo "📋 Next steps:"
+echo "   1. Restart your terminal or run 'source ~/.zshrc'"
+echo "   2. For Windows Terminal: Install Monaspace Nerd Font on Windows"
+echo "   3. For VS Code: Restart VS Code to apply font settings"
+echo ""
+
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    echo "🪟 WSL2 specific notes:"
+    echo "   - Windows clipboard integration should work with 'pbcopy'/'pbpaste'"
+    echo "   - Use 'wslview' to open URLs in Windows browser"
+    echo "   - Windows paths can be accessed via /mnt/c/"
+    echo ""
+fi
+
+echo "🔧 For font installation on Windows:"
+echo "   1. Download Monaspace Nerd Font from GitHub"
+echo "   2. Extract and install .ttf files on Windows"
+echo "   3. Set font in Windows Terminal and VS Code settings"
+
+echo ""
+echo "✅ Setup complete!"
+{{- end -}}

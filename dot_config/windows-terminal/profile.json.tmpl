@@ -1,0 +1,24 @@
+{{- if eq .chezmoi.os "linux" -}}
+{
+    "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
+    "name": "Ubuntu ({{ .chezmoi.hostname }})",
+    "source": "Windows.Terminal.Wsl",
+    "fontFace": "Monaspace Nerd Font",
+    "fontSize": 11,
+    "fontWeight": "normal",
+    "colorScheme": "One Half Dark",
+    "cursorShape": "bar",
+    "cursorColor": "#FFFFFF",
+    "startingDirectory": "//wsl$/Ubuntu-{{ .chezmoi.osRelease.versionId | default "22.04" }}/home/{{ .chezmoi.username }}",
+    "commandline": "wsl.exe -d Ubuntu-{{ .chezmoi.osRelease.versionId | default "22.04" }}",
+    "icon": "ms-appx:///ProfileIcons/{9acb9455-ca41-5af7-950f-6bca1bc9722f}.png",
+    "hidden": false,
+    "historySize": 9001,
+    "snapOnInput": true,
+    "altGrAliasing": true,
+    "bellStyle": "none",
+    "antialiasingMode": "grayscale",
+    "closeOnExit": "graceful",
+    "experimental.retroTerminalEffect": false
+}
+{{- end -}}

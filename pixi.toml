@@ -41,11 +41,17 @@ ncdu = "*"               # NCurses disk usage analyzer
 tmux = "*"               # Terminal multiplexer for session management
 dust = "*"               # More intuitive version of du
 
+# WSL2 and Cross-Platform Utilities
+# Note: xclip and wl-clipboard are installed via system package manager in setup script
+
 # Essential Tools
 chezmoi = "*"            # Dotfile manager
 jq = "*"                 # JSON processor and query tool
 sd = "*"                 # Intuitive find & replace CLI (sed alternative)
 tealdeer = "*"           # Fast tldr client for quick help
+
+# Editors
+neovim = "*"             # Modern Vim with better defaults and Lua config
 
 # ===================================================================
 # Development Profile - Additional Dev Tools

@@ -18,7 +18,8 @@
 # ===================================================================
 [core]
   editor = vim                        # Default editor for commit messages
-  autocrlf = input                    # Handle line endings properly on Unix systems
+  autocrlf = false                    # Handle line endings consistently across platforms
+  filemode = false                    # Ignore file mode changes (useful for WSL2)
   safecrlf = warn                     # Warn about mixed line endings
   pager = delta                       # Use delta for better diff viewing
   excludesfile = ~/.gitignore_global  # Global gitignore file

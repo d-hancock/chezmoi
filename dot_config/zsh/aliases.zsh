@@ -112,7 +112,15 @@ alias czcd='cd $(chezmoi source-path)'        # Navigate to ChezMoi source direc
 # Common development tool shortcuts
 alias j='just'                               # Justfile task runner
 alias v='$EDITOR'                            # Open default editor
-alias vim='$EDITOR'                          # Use default editor instead of vim
+alias e='$EDITOR'                            # Alternative editor alias
+
+# Editor aliases that respect VS Code context (set in terminal-compat.zsh)
+if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+    # Only create these aliases outside of VS Code
+    alias vim='$EDITOR'                      # Use preferred editor
+    alias vi='$EDITOR'                       # Use preferred editor
+fi
+
 alias code='code .'                          # Open current directory in VS Code
 
 # ===================================================================
@@ -156,3 +164,17 @@ alias serve-here='python3 -m http.server 8000'    # Same as above
 # Quick weather information using wttr.in service
 alias weather='curl -s "wttr.in/?format=3"'       # Quick weather summary
 alias forecast='curl -s "wttr.in/"'               # Detailed weather forecast
+
+# ===================================================================
+# Cross-Platform Clipboard
+# ===================================================================
+# Clipboard aliases are defined in terminal-compat.zsh for proper detection
+# These are just convenient shortcuts that should work after compatibility loading
+alias copy='pbcopy'                               # Copy to clipboard
+alias paste='pbpaste'                             # Paste from clipboard
+
+# Copy current directory path to clipboard
+alias copypath='pwd | pbcopy && echo "Path copied to clipboard"'
+
+# Copy last command to clipboard  
+alias copylast='fc -ln -1 | pbcopy && echo "Last command copied to clipboard"'

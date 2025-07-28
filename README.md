@@ -62,27 +62,79 @@ This repository provides a complete, reproducible development environment setup 
 ## Directory Structure
 
 ```
+```
 .chezmoi.toml                 # ChezMoi config
 pixi.toml                     # Pixi dependencies
 run_once_setup_tools.sh.tmpl  # Pixi + extra tools
 run_once_setup_fonts.sh.tmpl  # Nerd font installer
 run_once_setup_dirs.sh.tmpl   # Directory scaffolding
+run_once_setup_wsl_compat.sh.tmpl  # WSL2/Terminal compatibility
 
 dot_zshrc.tmpl                # Zsh, Zinit, Starship
+dot_vimrc                     # Vim configuration
+dot_gitconfig                 # Git configuration with Vim integration
 
 dot_config/
+  nvim/
+    init.lua                  # Neovim configuration (Lua-based)
   starship/
     starship.toml             # Prompt theme
   wezterm/
     wezterm.lua               # Terminal config
+  vscode/
+    settings.json             # VS Code configuration
+  windows-terminal/
+    profile.json.tmpl         # Windows Terminal profile
   zsh/
     aliases.zsh               # Aliases stub
     completions.zsh           # Extra completions stub
+    terminal-compat.zsh       # Terminal/WSL2 compatibility
+  fonts/
+    README.md                 # Font installation guide
 
 dot_local/
   bin/
     sample-script.sh          # Custom scripts stub
 ```
+
+## Editor Integration
+
+The setup includes comprehensive Vim/Neovim configuration:
+
+### Editor Priority
+- **Neovim** (preferred): Modern editor with Lua configuration and LSP support
+- **Vim** (fallback): Classic Vim with modern settings
+- **VS Code** (context-aware): Automatic when in VS Code integrated terminal
+
+### Key Features
+- **Smart Context**: Automatically uses VS Code as editor when in VS Code terminal
+- **Git Integration**: Configured as merge and diff tool in Git
+- **Clipboard Support**: Cross-platform clipboard integration
+- **File Type Support**: Language-specific settings for Python, YAML, JSON, etc.
+- **Modern Defaults**: Sensible settings for development workflows
+
+---
+```
+
+## Cross-Platform Compatibility
+
+This setup includes specific enhancements for Windows Terminal, VS Code, and WSL2 environments:
+
+### Windows Terminal Integration
+- **Profile Template**: Auto-generated Windows Terminal profile with proper font settings
+- **Font Configuration**: Monaspace Nerd Font setup for Windows host
+- **Color Scheme**: Matches Starship prompt theme
+
+### VS Code Integration  
+- **Font Settings**: Automatic font configuration for editor and terminal
+- **Terminal Profile**: Zsh configured as default shell
+- **WSL2 Support**: Optimized settings for VS Code WSL extension
+
+### WSL2 Compatibility
+- **Clipboard Integration**: Unified `pbcopy`/`pbpaste` commands across environments
+- **Path Handling**: Windows path conversion utilities
+- **Git Configuration**: Cross-platform line ending and permission settings
+- **Environment Detection**: Automatic terminal type detection and optimization
 
 ---
 

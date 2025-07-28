@@ -1,0 +1,29 @@
+{
+    "terminal.integrated.fontFamily": "Monaspace Nerd Font",
+    "terminal.integrated.fontSize": 11,
+    "terminal.integrated.profiles.linux": {
+        "zsh": {
+            "path": "/usr/bin/zsh",
+            "args": []
+        }
+    },
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.allowChords": false,
+    "terminal.integrated.commandsToSkipShell": [
+        "language-julia.interrupt"
+    ],
+    "terminal.integrated.env.linux": {
+        "COLORTERM": "truecolor"
+    },
+    "editor.fontFamily": "Monaspace Nerd Font, 'Droid Sans Mono', 'monospace', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 11,
+    "workbench.colorTheme": "Default Dark+",
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000
+}
