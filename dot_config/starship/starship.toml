@@ -36,6 +36,7 @@ $python\
 [](fg:color_blue bg:color_bg3)\
 $docker_context\
 $conda\
+$env_var.DOTFILES_MACHINE_INDICATOR\
 [](fg:color_bg3 bg:color_bg1)\
 $time\
 [ ](fg:color_bg1)\
@@ -260,3 +261,12 @@ when = '[ "$PIXI_ENVIRONMENT_NAME" ]'      # Only show when variable is set
 symbol = "🅿️ "                            # Pixi icon
 style = "bold blue"
 format = "[$symbol$output]($style) "
+
+# ===================================================================
+# Machine Type Indicator
+# ===================================================================
+# Shows machine type icon in prompt (server, desktop, WSL2)
+[env_var.DOTFILES_MACHINE_INDICATOR]
+variable = "DOTFILES_MACHINE_INDICATOR"
+style = "bg:color_bg3 fg:color_fg0"
+format = "[ $env_value ]($style)"

@@ -1,0 +1,152 @@
+{{- /* Machine-specific configuration template */ -}}
+{{- $machineType := "server" -}}
+{{- if stat (joinPath .chezmoi.homeDir ".config/dotfiles/machine-type") -}}
+{{-   $machineType = include (joinPath .chezmoi.homeDir ".config/dotfiles/machine-type") | trim -}}
+{{- else -}}
+{{-   /* Detect machine type if file doesn't exist */ -}}
+{{-   if .chezmoi.kernel.osrelease | lower | contains "microsoft" -}}
+{{-     $machineType = "wsl2" -}}
+{{-   else if stat "/usr/bin/gnome-session" -}}
+{{-     $machineType = "ubuntu" -}}
+{{-   else -}}
+{{-     $machineType = "server" -}}
+{{-   end -}}
+{{- end -}}
+
+# ===================================================================
+# Machine-Specific Environment Detection
+# ===================================================================
+# This file provides machine-specific environment variables and functions
+# Machine type: {{ $machineType }}
+
+export DOTFILES_MACHINE_TYPE="{{ $machineType }}"
+
+{{- if eq $machineType "server" }}
+# ===================================================================
+# Server-Specific Configuration
+# ===================================================================
+export EDITOR="vim"  # Prefer vim on servers (lighter than nvim)
+export PAGER="less"
+
+# Server-specific environment variables
+export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "  # Add timestamps to history
+export TMOUT=3600  # Auto-logout after 1 hour of inactivity (security)
+
+{{- else if eq $machineType "ubuntu" }}
+# ===================================================================
+# Ubuntu Desktop-Specific Configuration
+# ===================================================================
+export EDITOR="nvim"  # Prefer neovim on desktop
+export BROWSER="firefox"
+
+# Desktop-specific environment variables
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+{{- else if eq $machineType "wsl2" }}
+# ===================================================================
+# WSL2-Specific Configuration
+# ===================================================================
+export EDITOR="nvim"  # Prefer neovim in WSL2
+export BROWSER="wslview"  # Use WSL browser integration
+
+# WSL2-specific environment variables
+export DISPLAY=":0.0"  # Default X11 display
+export PULSE_RUNTIME_PATH="/mnt/wslg/runtime"  # WSLg audio support
+
+{{- end }}
+
+# ===================================================================
+# Machine-Specific Functions
+# ===================================================================
+{{- if eq $machineType "server" }}
+# Server monitoring functions
+function server_status() {
+    echo "=== System Status ==="
+    uptime
+    echo ""
+    echo "=== Memory Usage ==="
+    free -h
+    echo ""
+    echo "=== Disk Usage ==="
+    df -h
+    echo ""
+    echo "=== Load Average ==="
+    cat /proc/loadavg
+}
+
+function active_connections() {
+    echo "=== Active Network Connections ==="
+    ss -tuln
+}
+
+{{- else if eq $machineType "ubuntu" }}
+# Ubuntu desktop functions
+function desktop_info() {
+    echo "=== Desktop Environment ==="
+    echo "Session: $XDG_CURRENT_DESKTOP"
+    echo "Display: $DISPLAY"
+    echo "Wayland: $WAYLAND_DISPLAY"
+}
+
+function install_deb() {
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: install_deb <package_url>"
+        return 1
+    fi
+    curl -L "$1" -o /tmp/package.deb
+    sudo dpkg -i /tmp/package.deb
+    sudo apt install -f  # Fix any dependency issues
+    rm /tmp/package.deb
+}
+
+{{- else if eq $machineType "wsl2" }}
+# WSL2 integration functions
+function windows_path() {
+    wslpath -w "$1"
+}
+
+function linux_path() {
+    wslpath -u "$1"
+}
+
+function open_in_windows() {
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: open_in_windows <file_or_url>"
+        return 1
+    fi
+    wslview "$1"
+}
+
+{{- end }}
+
+# ===================================================================
+# Machine-Specific Aliases
+# ===================================================================
+{{- if eq $machineType "server" }}
+alias monitor='server_status'
+alias connections='active_connections'
+alias secure='sudo fail2ban-client status'
+
+{{- else if eq $machineType "ubuntu" }}
+alias desktop='desktop_info'
+alias install-deb='install_deb'
+alias restart-gnome='sudo systemctl restart gdm'
+
+{{- else if eq $machineType "wsl2" }}
+alias winpath='windows_path'
+alias linuxpath='linux_path'
+alias open='open_in_windows'
+
+{{- end }}
+
+# Machine type indicator for prompt (if not already set)
+if [[ -z "$DOTFILES_MACHINE_INDICATOR" ]]; then
+    case "$DOTFILES_MACHINE_TYPE" in
+        "server") export DOTFILES_MACHINE_INDICATOR="🖥️" ;;
+        "ubuntu") export DOTFILES_MACHINE_INDICATOR="🐧" ;;
+        "wsl2")   export DOTFILES_MACHINE_INDICATOR="🪟" ;;
+        *)        export DOTFILES_MACHINE_INDICATOR="💻" ;;
+    esac
+fi

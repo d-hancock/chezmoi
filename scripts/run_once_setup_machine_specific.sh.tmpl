@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+# ===================================================================
+# ChezMoi Bootstrap Script - Machine-Specific Setup
+# ===================================================================
+# This script detects the machine type and installs appropriate tools
+# Supports: Generic Linux Server, Ubuntu Desktop, Ubuntu WSL2
+# 
+# Execution: Automatically run by ChezMoi on first 'chezmoi apply'
+# Template: Uses ChezMoi variables for OS detection
+
+set -e  # Exit on any error
+
+echo "🖥️  Setting up machine-specific configuration..."
+
+# ===================================================================
+# Machine Type Detection
+# ===================================================================
+detect_machine_type() {
+    # Check for WSL2
+    if [[ -n "$WSL_DISTRO_NAME" ]]; then
+        echo "wsl2"
+        return
+    fi
+    
+    # Check for Ubuntu
+    if [[ -f /etc/os-release ]] && grep -q "Ubuntu" /etc/os-release; then
+        # Check if it's a desktop environment
+        if [[ -n "$DISPLAY" ]] || [[ -n "$WAYLAND_DISPLAY" ]] || command -v gnome-session >/dev/null 2>&1; then
+            echo "ubuntu"
+        else
+            echo "server"
+        fi
+        return
+    fi
+    
+    # Check for other Debian-based systems
+    if [[ -f /etc/debian_version ]]; then
+        echo "server"
+        return
+    fi
+    
+    # Check for RHEL-based systems
+    if [[ -f /etc/redhat-release ]] || [[ -f /etc/centos-release ]]; then
+        echo "server"
+        return
+    fi
+    
+    # Default to server for unknown Linux systems
+    echo "server"
+}
+
+MACHINE_TYPE=$(detect_machine_type)
+echo "🔍 Detected machine type: $MACHINE_TYPE"
+
+# ===================================================================
+# Install Machine-Specific Pixi Environment
+# ===================================================================
+echo "📦 Installing machine-specific tools via Pixi..."
+
+# Navigate to ChezMoi source directory
+cd "$(chezmoi source-path)"
+
+case "$MACHINE_TYPE" in
+    "wsl2")
+        echo "🪟 Setting up WSL2 environment..."
+        pixi install --environment wsl2-dev
+        ;;
+    "ubuntu")
+        echo "🐧 Setting up Ubuntu desktop environment..."
+        pixi install --environment ubuntu-dev
+        ;;
+    "server")
+        echo "🖥️  Setting up Linux server environment..."
+        pixi install --environment server
+        ;;
+    *)
+        echo "⚠️  Unknown machine type, using default environment..."
+        pixi install --environment default
+        ;;
+esac
+
+# ===================================================================
+# Machine-Specific System Packages
+# ===================================================================
+echo "📋 Installing system packages for $MACHINE_TYPE..."
+
+install_ubuntu_packages() {
+    echo "🐧 Installing Ubuntu-specific packages..."
+    sudo apt update
+    
+    # Common Ubuntu packages
+    sudo apt install -y \
+        build-essential \
+        software-properties-common \
+        apt-transport-https \
+        ca-certificates \
+        gnupg \
+        lsb-release
+    
+    # Desktop-specific packages (if desktop environment detected)
+    if [[ "$MACHINE_TYPE" == "ubuntu" ]]; then
+        sudo apt install -y \
+            firefox \
+            code \
+            gnome-tweaks \
+            dconf-editor
+    fi
+}
+
+install_server_packages() {
+    echo "🖥️  Installing server-specific packages..."
+    
+    # Detect package manager and install accordingly
+    if command -v apt >/dev/null 2>&1; then
+        sudo apt update
+        sudo apt install -y \
+            htop \
+            iotop \
+            nethogs \
+            iftop \
+            ncdu \
+            tree \
+            rsync \
+            fail2ban \
+            ufw \
+            logrotate
+    elif command -v yum >/dev/null 2>&1; then
+        sudo yum update -y
+        sudo yum install -y \
+            htop \
+            iotop \
+            nethogs \
+            iftop \
+            ncdu \
+            tree \
+            rsync \
+            fail2ban \
+            firewalld
+    elif command -v dnf >/dev/null 2>&1; then
+        sudo dnf update -y
+        sudo dnf install -y \
+            htop \
+            iotop \
+            nethogs \
+            iftop \
+            ncdu \
+            tree \
+            rsync \
+            fail2ban \
+            firewalld
+    fi
+}
+
+case "$MACHINE_TYPE" in
+    "wsl2"|"ubuntu")
+        install_ubuntu_packages
+        ;;
+    "server")
+        install_server_packages
+        ;;
+esac
+
+# ===================================================================
+# Create Machine-Specific Configuration
+# ===================================================================
+echo "⚙️  Creating machine-specific configuration..."
+
+# Create a machine type indicator file
+mkdir -p "$HOME/.config/dotfiles"
+echo "$MACHINE_TYPE" > "$HOME/.config/dotfiles/machine-type"
+
+# Set up machine-specific aliases
+case "$MACHINE_TYPE" in
+    "server")
+        # Server-specific aliases
+        cat >> "$HOME/.config/zsh/local-aliases.zsh" << 'EOF'
+# Server-specific aliases
+alias services='systemctl list-units --type=service --state=running'
+alias ports='ss -tuln'
+alias disk='df -h'
+alias mem='free -h'
+alias logs='journalctl -f'
+EOF
+        ;;
+    "ubuntu")
+        # Ubuntu desktop-specific aliases
+        cat >> "$HOME/.config/zsh/local-aliases.zsh" << 'EOF'
+# Ubuntu desktop-specific aliases
+alias open='xdg-open'
+alias pbcopy='xclip -selection clipboard'
+alias pbpaste='xclip -selection clipboard -o'
+alias update='sudo apt update && sudo apt upgrade'
+EOF
+        ;;
+    "wsl2")
+        # WSL2-specific aliases (handled by existing terminal-compat.zsh)
+        echo "# WSL2 aliases handled by terminal-compat.zsh" > "$HOME/.config/zsh/local-aliases.zsh"
+        ;;
+esac
+
+# ===================================================================
+# Final Setup Steps
+# ===================================================================
+echo "✅ Machine-specific setup complete for: $MACHINE_TYPE"
+echo ""
+echo "📋 Machine type saved to: ~/.config/dotfiles/machine-type"
+echo "🔧 Machine-specific aliases created in: ~/.config/zsh/local-aliases.zsh"
+echo ""
+
+case "$MACHINE_TYPE" in
+    "server")
+        echo "🖥️  Server setup notes:"
+        echo "   - System monitoring tools installed"
+        echo "   - Security tools (fail2ban, ufw/firewalld) installed"
+        echo "   - Use 'services', 'ports', 'logs' aliases for monitoring"
+        ;;
+    "ubuntu")
+        echo "🐧 Ubuntu desktop setup notes:"
+        echo "   - Desktop applications installed"
+        echo "   - GNOME tweaks and extensions available"
+        echo "   - Use 'update' alias for system updates"
+        ;;
+    "wsl2")
+        echo "🪟 WSL2 setup notes:"
+        echo "   - Cross-platform compatibility configured"
+        echo "   - Windows integration tools available"
+        echo "   - See terminal-compat.zsh for WSL-specific features"
+        ;;
+esac

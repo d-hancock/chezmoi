@@ -17,7 +17,8 @@ This repository provides a complete, reproducible development environment setup 
 - **Reproducible Environments**: All tools managed via Pixi/conda-forge
 - **Modular Configuration**: Separate configs for different tools
 - **Template-Driven**: Dynamic configuration based on machine context
-- **Cross-Platform Ready**: Designed for Linux with future OS support
+- **Cross-Platform Ready**: Designed for Linux with machine-specific configurations
+- **Machine Detection**: Automatically configures for server, Ubuntu desktop, or WSL2 environments
 
 ### Quick Start
 
@@ -28,7 +29,10 @@ This repository provides a complete, reproducible development environment setup 
    chezmoi apply
    ```
 
-2. Customize stubs and rerun `chezmoi apply` to update your environment.
+2. The system automatically detects your machine type and installs appropriate tools
+3. Customize configurations and rerun `chezmoi apply` to update your environment
+
+See [Machine-Specific Setup](docs/machine-specific-setup.md) for details on supported environments.
 
 ---
 
@@ -37,7 +41,8 @@ This repository provides a complete, reproducible development environment setup 
 ### Bootstrap Process
 1. **ChezMoi Installation**: Downloads and installs ChezMoi dotfile manager
 2. **Repository Clone**: Pulls this configuration repository
-3. **One-Time Scripts**: Executes bootstrap scripts for tools, fonts, and directories
+3. **Machine Detection**: Identifies system type (server/desktop/WSL2)
+4. **One-Time Scripts**: Executes bootstrap scripts for tools, fonts, and directories
 4. **Configuration Apply**: Renders and applies all dotfiles to home directory
 
 ### Key Components

@@ -79,11 +79,34 @@ entr = "*"               # Run commands when files change
 htop = "*"               # Interactive process viewer (fallback to btop)
 
 # ===================================================================
+# Machine-Specific Profiles
+# ===================================================================
+[feature.server.dependencies]
+# Server-specific tools (minimal GUI, focus on system administration)
+# Note: fail2ban, rsync, tree installed via system package manager in setup script
+screen = "*"             # Terminal multiplexer alternative to tmux
+watch = "*"              # Execute commands periodically
+lsof = "*"               # List open files and processes
+
+[feature.ubuntu.dependencies]
+# Ubuntu desktop-specific tools
+# Note: Most GUI apps (firefox, code) installed via apt in setup script
+
+[feature.wsl2.dependencies]
+# WSL2-specific utilities and tools
+# Note: WSL-specific setup handled in run_once_setup_wsl_compat.sh.tmpl
+
+# ===================================================================
 # Environment Definitions
 # ===================================================================
 [environments]
 default = ["default"]
 dev = ["default", "dev"]
+server = ["default", "server"]
+ubuntu = ["default", "ubuntu"]
+ubuntu-dev = ["default", "dev", "ubuntu"]
+wsl2 = ["default", "wsl2"]
+wsl2-dev = ["default", "dev", "wsl2"]
 
 # ===================================================================
 # Installation Notes
