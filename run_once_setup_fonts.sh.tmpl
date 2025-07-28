@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+mkdir -p ~/.local/share/fonts
+curl -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Monaspace.zip -o /tmp/Monaspace.zip
+unzip -o /tmp/Monaspace.zip -d ~/.local/share/fonts/Monaspace
+fc-cache -fv

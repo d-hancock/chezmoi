@@ -1,0 +1,4 @@
+# Minimal prompt preset – tweak freely
+format = "\n[❯](bold green) "
+[pixi]
+format = "[$overlay]($style) "

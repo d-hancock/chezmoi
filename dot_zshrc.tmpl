@@ -1,0 +1,14 @@
+# Zinit
+source ~/.zinit/bin/zinit.zsh
+zinit ice from"gh-r" as"program"
+zinit light starship/starship
+eval "$(starship init zsh)"
+
+# Plugins
+zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-completions
+
+# Aliases & completions
+source ~/.config/zsh/aliases.zsh
+source ~/.config/zsh/completions.zsh

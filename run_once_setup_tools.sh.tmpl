@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+# Install Pixi
+if ! command -v pixi >/dev/null; then
+  curl -sSf https://pixi.sh/install.sh | bash
+fi
+export PATH="$HOME/.pixi/bin:$PATH"
+# Sync packages
+cd "$(chezmoi source-path)"
+pixi sync
+# Fallback installs for tools not in conda-forge (edit list as needed)
+cargo install gum lazydocker vipe || true
