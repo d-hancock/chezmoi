@@ -1,14 +1,76 @@
-# Zinit
-source ~/.zinit/bin/zinit.zsh
-zinit ice from"gh-r" as"program"
+#!/usr/bin/env zsh
+# ChezMoi managed .zshrc - Main shell configuration
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Set up PATH for Pixi and other tools
+export PATH="$HOME/.pixi/bin:$HOME/.local/bin:$PATH"
+
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+# Zinit installation and setup
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Load Starship prompt
+zinit ice as"command" from"gh-r" \
+  atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
+  atpull"%atclone" src"init.zsh"
 zinit light starship/starship
-eval "$(starship init zsh)"
 
-# Plugins
-zinit light zdharma-continuum/fast-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-completions
+# Essential Zsh plugins
+zinit wait lucid for \
+  atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+    zdharma-continuum/fast-syntax-highlighting \
+  blockf \
+    zsh-users/zsh-completions \
+  atload"!_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions
 
-# Aliases & completions
-source ~/.config/zsh/aliases.zsh
-source ~/.config/zsh/completions.zsh
+# Additional useful plugins
+zinit wait lucid for \
+  OMZL::git.zsh \
+  OMZP::git \
+  OMZP::sudo \
+  OMZP::command-not-found
+
+# History configuration
+HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/history"
+HISTSIZE=50000
+SAVEHIST=50000
+mkdir -p "$(dirname "$HISTFILE")"
+
+# Zsh options
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
+setopt SHARE_HISTORY
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt AUTO_CD
+setopt GLOB_DOTS
+setopt EXTENDED_GLOB
+
+# Initialize tools if available
+command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+command -v atuin >/dev/null && eval "$(atuin init zsh)"
+command -v mcfly >/dev/null && eval "$(mcfly init zsh)"
+
+# Load modular configurations
+[[ -f ~/.config/zsh/aliases.zsh ]] && source ~/.config/zsh/aliases.zsh
+[[ -f ~/.config/zsh/completions.zsh ]] && source ~/.config/zsh/completions.zsh
