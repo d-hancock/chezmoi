@@ -115,3 +115,15 @@ Files can use ChezMoi templates (`.tmpl` extension) for:
 3. **Test Thoroughly**: Verify changes work across different environments
 4. **Version Control**: Commit frequently with descriptive messages
 5. **Backup First**: Use `chezmoi diff` before applying major changes
+
+# dot_config Directory
+
+This directory contains configuration files for various tools and environments. Each subdirectory is dedicated to a specific tool or aspect of the system.
+
+## Subdirectories
+
+- **starship/**: Configuration for the Starship prompt.
+- **wezterm/**: Configuration for the WezTerm terminal emulator.
+- **zsh/**: Configuration for the Zsh shell, including plugins, aliases, completions, and functions.
+
+Refer to the README files in each subdirectory for more details.
