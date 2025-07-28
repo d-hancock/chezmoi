@@ -1,2 +1,52 @@
 # Pixi dependencies (provided)
 # Add your dependencies here
+[project]
+name = "dotfiles-tools"
+channels = ["conda-forge"]
+
+[dependencies]
+# --- Navigation & Search ---
+fzf = "*"
+ripgrep = "*"
+fd-find = "*"
+bat = "*"
+tldr = "*"
+zoxide = "*"
+
+# --- Prompt & Shell Enhancements ---
+starship = "*"
+atuin = "*"
+direnv = "*"
+mcfly = "*"         # packaged as 'mcfly' on conda-forge
+
+# --- General Utilities ---
+eza = "*"           # modern ls replacement
+duf = "*"
+httpie = "*"
+btop = "*"
+entr = "*"
+ncdu = "*"
+hyperfine = "*"
+curlie = "*"
+tmux = "*"
+htop = "*"
+gitui = "*"
+tig = "*"
+dust = "*"
+bandwhich = "*"
+fx = "*"
+
+# --- Developer / Data tools ---
+pixi = "*"
+git-delta = "*"
+gh = "*"
+chezmoi = "*"
+just = "*"
+qsv = "*"           # fast CSV toolkit
+jq = "*"
+sd = "*"
+tealdeer = "*"
+xsv = "*"
+
+# Note: Any tool not yet on conda‑forge (e.g., gum, lazydocker, vipe) should be installed via run_once_setup_tools.sh.tmpl using apt, cargo, or go install until packages become available.
+
