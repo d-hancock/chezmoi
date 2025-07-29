@@ -10,6 +10,32 @@
 # - Custom completions for modern tools
 
 # ===================================================================
+# Completion System Initialization
+# ===================================================================
+# Initialize the completion system with proper paths
+autoload -Uz compinit
+
+# Add local completion directories to fpath
+fpath=(
+    "$HOME/.local/share/zsh/site-functions"
+    "$HOME/.local/share/zinit/completions"
+    $fpath
+)
+
+# Initialize completions with safety check for /usr/share/zsh issues
+if [[ -d /usr/share/zsh/vendor-completions ]]; then
+    # Check for problematic completions and exclude them
+    for compfile in /usr/share/zsh/vendor-completions/*; do
+        if [[ -f "$compfile" ]] && [[ -r "$compfile" ]]; then
+            fpath+=("$(dirname "$compfile")")
+        fi
+    done
+fi
+
+# Run compinit with error suppression for missing files
+compinit -i 2>/dev/null
+
+# ===================================================================
 # Completion Behavior Configuration
 # ===================================================================
 # Configure how completions are generated and matched

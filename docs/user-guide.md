@@ -30,7 +30,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)"
 ### Step 2: Initialize Your Dotfiles
 ```bash
 # Clone and initialize the dotfiles repository
-chezmoi init https://github.com/yourusername/your-dotfiles-repo.git
+chezmoi init https://github.com/d-hancock/chezmoi.git
 
 # Or if you have SSH keys already set up:
 chezmoi init git@github.com:yourusername/your-dotfiles-repo.git
@@ -61,6 +61,22 @@ This will:
 # Start a new shell session to load all configurations
 exec zsh
 ```
+
+### Step 6: Configure Windows Terminal (WSL Users)
+If you're using WSL2, add the generated Windows Terminal profile:
+
+1. **Copy the generated profile**:
+   ```bash
+   cat ~/.config/windows-terminal/profile.json
+   ```
+
+2. **Add to Windows Terminal**:
+   - Open Windows Terminal settings (`Ctrl + ,`)
+   - Click "Open JSON file" in the bottom left
+   - Add the copied profile to the `profiles.list` array
+   - Save and restart Windows Terminal
+
+The profile includes Monaspace Nerd Font configuration and optimal WSL2 settings.
 
 ---
 
@@ -375,6 +391,9 @@ zinit times
 
 #### Tools Not Found
 ```bash
+# Quick fix: Reload shell configuration
+source ~/.zshrc
+
 # Check PATH
 echo $PATH
 
@@ -382,7 +401,7 @@ echo $PATH
 which pixi
 pixi --version
 
-# Reinstall tools
+# Reinstall tools if needed
 cd $(chezmoi source-path)
 pixi install --environment dev
 ```

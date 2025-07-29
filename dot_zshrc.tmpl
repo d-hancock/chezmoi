@@ -115,6 +115,13 @@ setopt EXTENDED_GLOB           # Enable extended globbing patterns
 # Initialize various CLI tools if they're available (installed via Pixi)
 # These tools enhance the shell experience with better navigation and history
 
+# FZF setup - Set path variable for proper initialization
+if command -v fzf >/dev/null 2>&1; then
+    export FZF_PATH="${FZF_PATH:-$(dirname $(dirname $(which fzf)))}"
+    # Only source if the key-bindings file exists
+    [[ -f "${FZF_PATH}/shell/key-bindings.zsh" ]] && export FZF_SHELL_PATH="${FZF_PATH}/shell"
+fi
+
 # direnv - Per-directory environment variables
 # Automatically loads .envrc files when entering directories
 command -v direnv >/dev/null && eval "$(direnv hook zsh)"

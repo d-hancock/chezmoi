@@ -1,0 +1,37 @@
+# .gitignore for chezmoi dotfiles repo
+# Ignore Pixi environment directory
+.pixi/
+
+# Ignore local binaries and caches
+bin/
+dot_local/bin/
+
+# Ignore system-specific and temporary files
+*.swp
+*.swo
+*.swn
+*.bak
+*~
+
+# Ignore SSH keys and sensitive templates
+*.pem
+*.key
+dot_ssh/
+
+# Ignore editor/project files
+.vscode/
+.idea/
+.DS_Store
+
+# Ignore chezmoi state files (if any)
+.chezmoi*
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore logs
+*.log
+
+# Ignore OS-specific files
+Thumbs.db

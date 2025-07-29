@@ -49,10 +49,151 @@ echo "✅ Pixi packages synchronized"
 # ===================================================================
 # Fallback Installations
 # ===================================================================
-# Install tools not yet available in conda-forge using cargo
-# These will be moved to pixi.toml as packages become available
-echo "🦀 Installing additional tools via cargo..."
-cargo install gum lazydocker vipe || true
-echo "✅ Additional tools installed"
+# Install tools not available in conda-forge or having platform issues
+# These are essential for our ZSH configuration and daily workflow
+
+echo "🔧 Installing fallback tools via system package manager..."
+
+# Detect the environment
+PLATFORM="unknown"
+if [[ "$(uname)" == "Linux" ]]; then
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+        PLATFORM="wsl2"
+        echo "🪟 Detected WSL2 environment"
+    else
+        PLATFORM="linux"
+        echo "🐧 Detected Linux environment"
+    fi
+else
+    echo "❌ Unsupported platform: $(uname)"
+    exit 1
+fi
+
+# Detect package manager
+if command -v apt-get >/dev/null; then
+    PACKAGE_MANAGER="apt"
+elif command -v yum >/dev/null; then
+    PACKAGE_MANAGER="yum"
+elif command -v dnf >/dev/null; then
+    PACKAGE_MANAGER="dnf"
+else
+    echo "⚠️  No supported package manager found, skipping fallback installations"
+    PACKAGE_MANAGER="none"
+fi
+
+# Function to install tools with better error handling
+install_fallback_tool() {
+    local tool="$1"
+    local apt_package="$2"
+    local binary_check="${3:-$tool}"
+    
+    if command -v "$binary_check" >/dev/null 2>&1; then
+        echo "✅ $tool already available"
+        return 0
+    fi
+    
+    echo "📦 Installing $tool ($apt_package)..."
+    case "$PACKAGE_MANAGER" in
+        "apt")
+            sudo apt-get update -qq >/dev/null 2>&1 || true
+            if sudo apt-get install -y "$apt_package" >/dev/null 2>&1; then
+                echo "✅ Successfully installed $tool"
+            else
+                echo "❌ Failed to install $tool via apt"
+                return 1
+            fi
+            ;;
+        "dnf")
+            if sudo dnf install -y "$apt_package" >/dev/null 2>&1; then
+                echo "✅ Successfully installed $tool"
+            else
+                echo "❌ Failed to install $tool via dnf"
+                return 1
+            fi
+            ;;
+        "yum")
+            if sudo yum install -y "$apt_package" >/dev/null 2>&1; then
+                echo "✅ Successfully installed $tool"
+            else
+                echo "❌ Failed to install $tool via yum"
+                return 1
+            fi
+            ;;
+        *)
+            echo "⚠️  Cannot install $tool - no supported package manager"
+            return 1
+            ;;
+    esac
+}
+
+# Essential tools for ZSH configuration that commonly have conda-forge issues
+echo "🔧 Installing critical tools that may not be available via Pixi..."
+
+# Core tools needed for ZSH config
+install_fallback_tool "bat" "bat"
+install_fallback_tool "fzf" "fzf" 
+install_fallback_tool "ripgrep" "ripgrep" "rg"
+install_fallback_tool "fd-find" "fd-find" "fd"
+
+# Handle fd-find symlink issue on Ubuntu/Debian
+if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
+    echo "🔗 Creating fd symlink for fdfind..."
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$(which fdfind)" "$HOME/.local/bin/fd"
+    echo "✅ fd symlink created"
+fi
+
+# Additional modern CLI tools
+install_fallback_tool "eza" "eza"
+install_fallback_tool "btop" "btop"
+
+# Install platform-specific tools
+if [[ "$PLATFORM" == "wsl2" ]]; then
+    echo "🪟 Installing WSL2-specific tools..."
+    install_fallback_tool "wslu" "wslu"
+elif [[ "$PLATFORM" == "linux" ]]; then
+    echo "🐧 Installing Linux-specific tools..."
+    install_fallback_tool "xclip" "xclip"
+    install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy"
+fi
+
+# Install development tools that are essential
+echo "🛠️  Installing essential development tools..."
+install_fallback_tool "git" "git"
+install_fallback_tool "curl" "curl"
+install_fallback_tool "wget" "wget"
+install_fallback_tool "unzip" "unzip"
+install_fallback_tool "jq" "jq"
+
+# Install build tools for potential compilation needs
+if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+    install_fallback_tool "build-essential" "build-essential" "gcc"
+fi
+
+echo "✅ Fallback tools installation complete"
+
+# ===================================================================
+# POST-INSTALLATION VERIFICATION
+# ===================================================================
+echo "🔍 Verifying critical tools are available..."
+
+CRITICAL_TOOLS=("bat" "fzf" "rg" "fd" "git" "jq")
+MISSING_TOOLS=()
+
+for tool in "${CRITICAL_TOOLS[@]}"; do
+    if command -v "$tool" >/dev/null 2>&1; then
+        echo "✅ $tool: available"
+    else
+        echo "❌ $tool: missing"
+        MISSING_TOOLS+=("$tool")
+    fi
+done
+
+if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
+    echo ""
+    echo "⚠️  Some critical tools are missing: ${MISSING_TOOLS[*]}"
+    echo "💡 Your ZSH configuration may have errors until these are installed"
+    echo "   Try: sudo apt install ${MISSING_TOOLS[*]}"
+fi
 
 echo "🎉 Tool setup complete!"

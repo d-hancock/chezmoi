@@ -9,6 +9,27 @@
 # This file focuses on additional plugin loading and configuration
 
 # ===================================================================
+# Plugin Loading Error Handling
+# ===================================================================
+# Set up error handling for plugin loading
+setopt local_options no_warn_create_global
+
+# Function to safely load zinit plugins with error handling
+safe_zinit_load() {
+    local plugin_type="$1"
+    local plugin_name="$2"
+    
+    case "$plugin_type" in
+        "light")
+            zinit light "$plugin_name" 2>/dev/null || echo "⚠️  Failed to load plugin: $plugin_name"
+            ;;
+        "snippet")
+            zinit snippet "$plugin_name" 2>/dev/null || echo "⚠️  Failed to load snippet: $plugin_name"
+            ;;
+    esac
+}
+
+# ===================================================================
 # CORE QUALITY OF LIFE PLUGINS
 # ===================================================================
 # Essential plugins for improved shell experience
@@ -39,8 +60,18 @@ zinit light agkozak/zsh-z
 
 # FZF integration for fuzzy finding and navigation
 # Provides fuzzy search for files, history, processes
-zinit light junegunn/fzf
-zinit light unixorn/fzf-zsh-plugin
+if command -v fzf >/dev/null 2>&1; then
+    # Set FZF_PATH for proper initialization
+    export FZF_PATH="${FZF_PATH:-$(dirname $(dirname $(which fzf)))}"
+    
+    zinit light junegunn/fzf
+    zinit light unixorn/fzf-zsh-plugin
+    
+    # Load FZF shell integration if available
+    [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+elif command -v pixi >/dev/null 2>&1; then
+    echo "💡 FZF not found. Consider installing with: pixi add fzf"
+fi
 
 # Alternative: Directory bookmarking and fuzzy jump
 # Uncomment if you prefer anyframe over fzf/zsh-z combination
@@ -113,9 +144,11 @@ zinit snippet OMZ::plugins/systemd
 
 # Oh My Zsh library functions and plugins for enhanced functionality
 zinit wait lucid for \
-  OMZL::git.zsh \          # Git helper functions
-  OMZP::sudo \             # Double-tap ESC to prefix command with sudo
-  OMZP::command-not-found  # Suggests package installation for missing commands
+  OMZL::git.zsh            # Git helper functions
+
+# Load Oh My Zsh plugins individually to avoid syntax errors
+zinit snippet OMZ::plugins/sudo               # Double-tap ESC to prefix command with sudo
+zinit snippet OMZ::plugins/command-not-found  # Suggests package installation for missing commands
 
 # ===================================================================
 # DEVELOPMENT & LANGUAGE MANAGEMENT
@@ -124,7 +157,9 @@ zinit wait lucid for \
 
 # Docker command integration and aliases
 # Provides Docker-specific completions and shortcuts
-zinit snippet OMZ::plugins/docker
+if command -v docker >/dev/null 2>&1; then
+    zinit snippet OMZ::plugins/docker
+fi
 
 # ===================================================================
 # PERFORMANCE & SAFETY ENHANCEMENTS
@@ -237,22 +272,26 @@ ZSH_SAFE_RM_OPTS="-I"
 # ===================================================================
 # FZF INTEGRATION SETTINGS
 # ===================================================================
-# Configure FZF for optimal developer experience
+# Configure FZF for optimal developer experience (only if FZF is available)
 
-# Use fd for file searching if available (faster than find)
-if command -v fd >/dev/null 2>&1; then
-    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude .pixi'
-    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-    export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude .pixi'
+if command -v fzf >/dev/null 2>&1; then
+    # Use fd for file searching if available (faster than find)
+    if command -v fd >/dev/null 2>&1; then
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude .pixi'
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+        export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude .pixi'
+    fi
+
+    # Use ripgrep for text searching if available
+    if command -v rg >/dev/null 2>&1; then
+        export FZF_DEFAULT_OPTS='--ansi --preview "rg --color=always --line-number --no-heading --smart-case {q} || true"'
+    fi
+
+    # Enhanced FZF key bindings
+    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+else
+    echo "💡 FZF not found. Install with: sudo apt install fzf (or via your package manager)"
 fi
-
-# Use ripgrep for text searching if available
-if command -v rg >/dev/null 2>&1; then
-    export FZF_DEFAULT_OPTS='--ansi --preview "rg --color=always --line-number --no-heading --smart-case {q} || true"'
-fi
-
-# Enhanced FZF key bindings
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
 # ===================================================================
 # PIXI INTEGRATION & ENVIRONMENT MANAGEMENT
@@ -335,9 +374,10 @@ fi
 # ===================================================================
 # Actions to take after all plugins are loaded
 
+# Post-plugin setup - Clean up any plugin loading issues
 # Reload completions after all plugins are loaded
 autoload -Uz compinit
-compinit
+compinit -i 2>/dev/null  # Suppress errors from missing completion files
 
 # Load Pixi completions if available
 if command -v pixi >/dev/null 2>&1; then
@@ -364,10 +404,35 @@ alias pxs='pixi-status'   # Show project status
 alias pxsh='pixi-shell'   # Activate environment
 alias pxsearch='pixi-search'  # Search packages
 
-# Development tool shortcuts for quick access
-alias lg='lazygit'
-alias lzd='lazydocker' 
-alias btm='btop'
+# Development tool shortcuts for quick access (with fallbacks)
+if command -v lazygit >/dev/null 2>&1; then
+    alias lg='lazygit'
+else
+    alias lg='echo "💡 lazygit not installed. Install with: cargo install lazygit"'
+fi
+
+if command -v lazydocker >/dev/null 2>&1; then
+    alias lzd='lazydocker'
+else
+    alias lzd='echo "💡 lazydocker not installed. Install with: cargo install lazydocker"'
+fi
+
+if command -v btop >/dev/null 2>&1; then
+    alias btm='btop'
+elif command -v htop >/dev/null 2>&1; then
+    alias btm='htop'
+else
+    alias btm='top'
+fi
+
+# Smart cat replacement
+if command -v bat >/dev/null 2>&1; then
+    alias cat='bat --paging=never'
+    alias catt='bat'  # Full bat with paging
+elif command -v batcat >/dev/null 2>&1; then
+    alias cat='batcat --paging=never'
+    alias catt='batcat'
+fi
 
 # ===================================================================
 # Local Plugin Customizations

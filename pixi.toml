@@ -12,9 +12,12 @@
 # Documentation: https://pixi.sh/
 
 [project]
-name = "dotfiles-tools"
+name = "chezmoi"
+version = "0.1.0"
+description = "ChezMoi dotfiles management with Pixi for development tools"
+authors = ["Dale Hancock <dale@example.com>"]
 channels = ["conda-forge"]
-platforms = ["linux-64", "osx-64", "win-64"]
+platforms = ["linux-64"]
 
 # ===================================================================
 # Default Dependencies - Essential Tools
@@ -24,13 +27,11 @@ platforms = ["linux-64", "osx-64", "win-64"]
 fzf = "*"                # Fuzzy finder for files, commands, and more
 ripgrep = "*"            # Ultra-fast text search (replaces grep)
 fd-find = "*"            # User-friendly find alternative
-bat = "*"                # Cat with syntax highlighting and git integration
 tldr = "*"               # Simplified man pages with examples
 zoxide = "*"             # Smart cd command that learns your habits
 
 # Prompt & Shell Enhancements
 starship = "*"           # Cross-shell prompt (configured in starship.toml)
-atuin = "*"              # Enhanced shell history with search and sync
 direnv = "*"             # Per-directory environment variables
 mcfly = "*"              # Intelligent history search with fuzzy matching
 
@@ -42,9 +43,6 @@ ncdu = "*"               # NCurses disk usage analyzer
 tmux = "*"               # Terminal multiplexer for session management
 dust = "*"               # More intuitive version of du
 
-# WSL2 and Cross-Platform Utilities
-# Note: xclip and wl-clipboard are installed via system package manager in setup script
-
 # Essential Tools
 chezmoi = "*"            # Dotfile manager
 jq = "*"                 # JSON processor and query tool
@@ -54,24 +52,24 @@ tealdeer = "*"           # Fast tldr client for quick help
 # Editors
 neovim = "*"             # Modern Vim with better defaults and Lua config
 
+# Linux-specific tools
+bat = "*"                # Cat with syntax highlighting and git integration
+atuin = "*"              # Enhanced shell history with search and sync
+tig = "*"                # Text-mode interface for git
+
 # ===================================================================
 # Development Dependencies - Additional Dev Tools  
 # ===================================================================
 [feature.dev.dependencies]
 # Developer & Data Tools
-pixi = "*"               # Package manager (self-managed for updates)
 git-delta = "*"          # Syntax-highlighted git diffs
 gh = "*"                 # GitHub CLI for repository management
 just = "*"               # Command runner and task automation
-qsv = "*"                # Fast CSV data processing toolkit
-xsv = "*"                # CSV command line toolkit
 gitui = "*"              # Terminal UI for git operations
-tig = "*"                # Text-mode interface for git
 
-# Network & Monitoring Tools
+# Network & System Tools
 httpie = "*"             # User-friendly HTTP client
 curlie = "*"             # curl with httpie-like interface
-bandwhich = "*"          # Terminal bandwidth utilization tool
 fx = "*"                 # Interactive JSON viewer and processor
 
 # Performance & Benchmarking
@@ -80,37 +78,21 @@ entr = "*"               # Run commands when files change
 htop = "*"               # Interactive process viewer (fallback to btop)
 
 # ===================================================================
-# Machine-Specific Profiles
-# ===================================================================
-[feature.server.dependencies]
-# Server-specific tools (minimal GUI, focus on system administration)
-# Note: fail2ban, rsync, tree installed via system package manager in setup script
-screen = "*"             # Terminal multiplexer alternative to tmux
-watch = "*"              # Execute commands periodically
-lsof = "*"               # List open files and processes
-
-[feature.ubuntu.dependencies]
-# Ubuntu desktop-specific tools
-# Note: Most GUI apps (firefox, code) installed via apt in setup script
-
-[feature.wsl2.dependencies]
-# WSL2-specific utilities and tools
-# Note: WSL-specific setup handled in run_once_setup_wsl_compat.sh.tmpl
-
-# ===================================================================
 # Environment Definitions
 # ===================================================================
 [environments]
-dev = ["dev"]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
 
 # ===================================================================
 # Installation Notes
 # ===================================================================
-# Tools not yet available in conda-forge are installed via run_once_setup_tools.sh.tmpl
-# using cargo, go install, or other package managers. These include:
-# - gum: Interactive shell utilities
-# - lazydocker: Terminal UI for docker
-# - vipe: Edit pipes interactively
+# Tools not available in conda-forge are installed via run_once_setup_tools.sh.tmpl
+# using apt, cargo, or other package managers. These include:
+# - bandwhich: Terminal bandwidth utilization tool (install via cargo)
+# - qsv/xsv: CSV processing tools (install via cargo)
+# - gum: Interactive shell utilities (install via go/cargo)
+# - lazydocker: Terminal UI for docker (install via go)
 # 
-# As these tools become available in conda-forge, move them to the appropriate profile
+# As these tools become available in conda-forge, move them to the appropriate dependencies
 
