@@ -40,12 +40,8 @@ export PATH="$HOME/.pixi/bin:$PATH"
 echo "📋 Synchronizing packages from pixi.toml..."
 cd "$(chezmoi source-path)"
 
-# Install default profile (essential tools)
-echo "🔧 Installing default tools..."
-pixi install --environment default
-
-# Install development profile (includes default + dev tools)
-echo "🛠️  Installing development tools..."
+# Install development profile (includes default + dev tools automatically)
+echo "🛠️  Installing development tools (includes default tools)..."
 pixi install --environment dev
 
 echo "✅ Pixi packages synchronized"

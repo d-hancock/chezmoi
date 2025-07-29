@@ -67,8 +67,7 @@ zinit light tj/git-extras
 # Pixi environment integration and helpers
 # Load Pixi shell integration if available
 if command -v pixi >/dev/null 2>&1; then
-    # Initialize Pixi shell hook for environment activation
-    eval "$(pixi completion --shell zsh)"
+    # Note: Pixi completions are loaded in completions.zsh to avoid duplication
     
     # Custom Pixi environment switcher function
     pixi-activate() {
@@ -219,10 +218,14 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 
-# History substring search configuration
+# History substring search configuration  
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND="bg=green,fg=white,bold"
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND="bg=red,fg=white,bold"
 HISTORY_SUBSTRING_SEARCH_FUZZY=1
+
+# Bind history substring search to up/down arrows
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 # You-should-use configuration
 YSU_MESSAGE_POSITION="after"
@@ -256,9 +259,12 @@ export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap 
 # ===================================================================
 # Enhanced Pixi integration for package and environment management
 
-# Pixi environment directory following XDG standards
+# Pixi environment directories following XDG standards
 export PIXI_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/pixi"
 export PIXI_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pixi"
+
+# Ensure Pixi directories exist
+mkdir -p "$PIXI_CACHE_DIR" "$PIXI_CONFIG_DIR"
 
 # Pixi project detection and auto-activation helper
 pixi-status() {
@@ -335,7 +341,7 @@ compinit
 
 # Load Pixi completions if available
 if command -v pixi >/dev/null 2>&1; then
-    # Pixi completions are already loaded in the environment management section above
+    # Note: Pixi completions are loaded in completions.zsh to avoid duplication
     :
 fi
 

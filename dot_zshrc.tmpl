@@ -137,6 +137,10 @@ command -v mcfly >/dev/null && eval "$(mcfly init zsh)"
 # Auto-start SSH agent and load keys for seamless Git operations
 # Only runs if SSH agent is not already running
 if [ -z "$SSH_AUTH_SOCK" ]; then
+  # Create XDG runtime directory if it doesn't exist
+  XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$HOME/.cache/runtime}"
+  mkdir -p "$XDG_RUNTIME_DIR"
+  
   # Check for existing SSH agent
   SSH_AGENT_PID_FILE="$XDG_RUNTIME_DIR/ssh-agent.pid"
   SSH_AGENT_SOCK_FILE="$XDG_RUNTIME_DIR/ssh-agent.sock"
