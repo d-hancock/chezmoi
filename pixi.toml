@@ -51,9 +51,7 @@ tealdeer = "*"           # Fast tldr client for quick help
 
 # Editors
 neovim = "*"             # Modern Vim with better defaults and Lua config
-
-# Linux-specific tools
-bat = "*"                # Cat with syntax highlighting and git integration
+bat = ">=0.25.0,<0.26"
 atuin = "*"              # Enhanced shell history with search and sync
 tig = "*"                # Text-mode interface for git
 

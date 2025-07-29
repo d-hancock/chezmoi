@@ -7,10 +7,42 @@
 # - Missing completions
 # - FZF path issues
 # - Docker completion errors
+# - ChezMoi PATH access issues
 
 set -e
 
 echo "🔧 Fixing ZSH configuration issues..."
+
+# ===================================================================
+# Fix ChezMoi PATH Issue
+# ===================================================================
+echo "🔗 Fixing ChezMoi PATH access..."
+
+# Create .local/bin directory if it doesn't exist
+mkdir -p "$HOME/.local/bin"
+
+# Find the chezmoi binary
+CHEZMOI_SOURCE_DIR="$HOME/.local/share/chezmoi"
+CHEZMOI_BINARY="$CHEZMOI_SOURCE_DIR/bin/chezmoi"
+
+if [[ -f "$CHEZMOI_BINARY" ]]; then
+    # Make sure the binary is executable
+    chmod +x "$CHEZMOI_BINARY"
+    
+    # Remove existing symlink or backup existing file
+    if [[ -L "$HOME/.local/bin/chezmoi" ]]; then
+        rm "$HOME/.local/bin/chezmoi"
+    elif [[ -f "$HOME/.local/bin/chezmoi" ]]; then
+        mv "$HOME/.local/bin/chezmoi" "$HOME/.local/bin/chezmoi.backup.$(date +%s)"
+        echo "⚠️  Backed up existing chezmoi binary"
+    fi
+    
+    # Create symlink
+    ln -sf "$CHEZMOI_BINARY" "$HOME/.local/bin/chezmoi"
+    echo "✅ ChezMoi binary linked to PATH"
+else
+    echo "❌ ChezMoi binary not found at $CHEZMOI_BINARY"
+fi
 
 # Create necessary directories
 echo "📁 Creating necessary directories..."
@@ -87,14 +119,52 @@ echo "📚 Fixing shell history..."
 touch "$HOME/.local/share/zsh/history"
 chmod 600 "$HOME/.local/share/zsh/history"
 
+# ===================================================================
+# Fix File Permissions
+# ===================================================================
+echo "🔧 Fixing file permissions..."
+
+# Fix permissions for user binaries
+if [[ -d "$HOME/.local/bin" ]]; then
+    find "$HOME/.local/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
+    echo "✅ Fixed permissions for ~/.local/bin"
+fi
+
+# Fix permissions for Pixi-managed tools
+if [[ -d "$HOME/.pixi/bin" ]]; then
+    find "$HOME/.pixi/bin" -type f -exec chmod +x {} \; 2>/dev/null || true
+    echo "✅ Fixed permissions for ~/.pixi/bin"
+fi
+
 # Rebuild zsh completions
 echo "🔄 Rebuilding completions..."
 rm -f ~/.zcompdump*
 zsh -c "autoload -Uz compinit && compinit -i" 2>/dev/null || true
 
+# ===================================================================
+# Verify Fixes
+# ===================================================================
+echo "🔍 Verifying fixes..."
+
+# Test chezmoi command
+if command -v chezmoi >/dev/null 2>&1; then
+    echo "✅ ChezMoi is now accessible"
+    chezmoi --version 2>/dev/null || echo "⚠️  ChezMoi may have issues but is accessible"
+else
+    echo "❌ ChezMoi still not accessible"
+fi
+
+# Check if .local/bin is in PATH
+if echo "$PATH" | grep -q "$HOME/.local/bin"; then
+    echo "✅ ~/.local/bin is in PATH"
+else
+    echo "⚠️  ~/.local/bin is not in PATH - you may need to restart your shell"
+fi
+
 echo "✅ ZSH fixes applied! Please restart your shell or run 'exec zsh' to reload."
 echo ""
 echo "If you still see issues, try:"
 echo "  1. Run 'exec zsh' to reload the shell"
-echo "  2. Check 'pixi add fzf bat' to install missing tools"
+echo "  2. Check 'pixi add fzf bat' to install missing tools"  
 echo "  3. Run 'zinit update' to update plugins"
+echo "  4. Test 'cza' (chezmoi apply) to apply your dotfiles configuration"

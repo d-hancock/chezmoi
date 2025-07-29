@@ -28,6 +28,47 @@ else
 fi
 
 # ===================================================================
+# ChezMoi Binary Setup
+# ===================================================================
+# Ensure chezmoi is accessible in PATH by creating symlink
+echo "🔗 Setting up ChezMoi binary access..."
+
+# Create .local/bin directory if it doesn't exist
+mkdir -p "$HOME/.local/bin"
+
+# Path to chezmoi binary in source directory
+CHEZMOI_BINARY="$(chezmoi source-path)/bin/chezmoi"
+
+# Check if binary exists
+if [[ -f "$CHEZMOI_BINARY" ]]; then
+    # Make sure the binary is executable
+    chmod +x "$CHEZMOI_BINARY"
+    
+    # Create or update symlink
+    if [[ -L "$HOME/.local/bin/chezmoi" ]]; then
+        # Remove existing symlink
+        rm "$HOME/.local/bin/chezmoi"
+    elif [[ -f "$HOME/.local/bin/chezmoi" ]]; then
+        # Backup existing file
+        mv "$HOME/.local/bin/chezmoi" "$HOME/.local/bin/chezmoi.backup.$(date +%s)"
+        echo "⚠️  Backed up existing chezmoi binary"
+    fi
+    
+    # Create new symlink
+    ln -sf "$CHEZMOI_BINARY" "$HOME/.local/bin/chezmoi"
+    echo "✅ ChezMoi binary linked to PATH"
+    
+    # Verify it works
+    if command -v chezmoi >/dev/null 2>&1; then
+        echo "✅ ChezMoi is now accessible via PATH"
+    else
+        echo "❌ ChezMoi setup failed - still not in PATH"
+    fi
+else
+    echo "❌ ChezMoi binary not found at $CHEZMOI_BINARY"
+fi
+
+# ===================================================================
 # Environment Setup
 # ===================================================================
 # Ensure Pixi is available in current session
@@ -81,7 +122,7 @@ else
     PACKAGE_MANAGER="none"
 fi
 
-# Function to install tools with better error handling
+# Function to install tools with better error handling and permission fixes
 install_fallback_tool() {
     local tool="$1"
     local apt_package="$2"
@@ -89,6 +130,12 @@ install_fallback_tool() {
     
     if command -v "$binary_check" >/dev/null 2>&1; then
         echo "✅ $tool already available"
+        # Ensure existing tool has execute permissions
+        tool_path=$(which "$binary_check" 2>/dev/null)
+        if [[ -n "$tool_path" && -f "$tool_path" && ! -x "$tool_path" ]]; then
+            echo "🔧 Fixing permissions for $tool..."
+            chmod +x "$tool_path" 2>/dev/null || echo "⚠️  Cannot fix permissions for $tool"
+        fi
         return 0
     fi
     
@@ -98,6 +145,11 @@ install_fallback_tool() {
             sudo apt-get update -qq >/dev/null 2>&1 || true
             if sudo apt-get install -y "$apt_package" >/dev/null 2>&1; then
                 echo "✅ Successfully installed $tool"
+                # Fix permissions for newly installed tool
+                tool_path=$(which "$binary_check" 2>/dev/null)
+                if [[ -n "$tool_path" && -f "$tool_path" ]]; then
+                    chmod +x "$tool_path" 2>/dev/null || true
+                fi
             else
                 echo "❌ Failed to install $tool via apt"
                 return 1
@@ -106,6 +158,11 @@ install_fallback_tool() {
         "dnf")
             if sudo dnf install -y "$apt_package" >/dev/null 2>&1; then
                 echo "✅ Successfully installed $tool"
+                # Fix permissions for newly installed tool
+                tool_path=$(which "$binary_check" 2>/dev/null)
+                if [[ -n "$tool_path" && -f "$tool_path" ]]; then
+                    chmod +x "$tool_path" 2>/dev/null || true
+                fi
             else
                 echo "❌ Failed to install $tool via dnf"
                 return 1
@@ -114,6 +171,11 @@ install_fallback_tool() {
         "yum")
             if sudo yum install -y "$apt_package" >/dev/null 2>&1; then
                 echo "✅ Successfully installed $tool"
+                # Fix permissions for newly installed tool
+                tool_path=$(which "$binary_check" 2>/dev/null)
+                if [[ -n "$tool_path" && -f "$tool_path" ]]; then
+                    chmod +x "$tool_path" 2>/dev/null || true
+                fi
             else
                 echo "❌ Failed to install $tool via yum"
                 return 1
@@ -173,21 +235,44 @@ fi
 echo "✅ Fallback tools installation complete"
 
 # ===================================================================
-# POST-INSTALLATION VERIFICATION
+# POST-INSTALLATION VERIFICATION & PERMISSIONS
 # ===================================================================
-echo "🔍 Verifying critical tools are available..."
+echo "🔍 Verifying critical tools and fixing permissions..."
 
-CRITICAL_TOOLS=("bat" "fzf" "rg" "fd" "git" "jq")
+CRITICAL_TOOLS=("bat" "fzf" "rg" "fd" "git" "jq" "chezmoi")
 MISSING_TOOLS=()
 
 for tool in "${CRITICAL_TOOLS[@]}"; do
     if command -v "$tool" >/dev/null 2>&1; then
         echo "✅ $tool: available"
+        
+        # Ensure the tool has execute permissions
+        tool_path=$(which "$tool" 2>/dev/null)
+        if [[ -n "$tool_path" && -f "$tool_path" ]]; then
+            if [[ ! -x "$tool_path" ]]; then
+                echo "🔧 Fixing permissions for $tool..."
+                chmod +x "$tool_path" 2>/dev/null || {
+                    echo "⚠️  Cannot fix permissions for $tool (may need sudo)"
+                }
+            fi
+        fi
     else
         echo "❌ $tool: missing"
         MISSING_TOOLS+=("$tool")
     fi
 done
+
+# Fix permissions for any user binaries in ~/.local/bin
+if [[ -d "$HOME/.local/bin" ]]; then
+    echo "🔧 Ensuring all user binaries have execute permissions..."
+    find "$HOME/.local/bin" -type f -name "*" -exec chmod +x {} \; 2>/dev/null || true
+fi
+
+# Fix permissions for Pixi-managed tools
+if [[ -d "$HOME/.pixi/bin" ]]; then
+    echo "🔧 Ensuring Pixi-managed tools have execute permissions..."
+    find "$HOME/.pixi/bin" -type f -name "*" -exec chmod +x {} \; 2>/dev/null || true
+fi
 
 if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo ""
