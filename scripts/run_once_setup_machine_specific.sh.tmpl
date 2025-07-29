@@ -63,19 +63,19 @@ cd "$(chezmoi source-path)"
 case "$MACHINE_TYPE" in
     "wsl2")
         echo "🪟 Setting up WSL2 environment..."
-        pixi install --environment wsl2-dev
+        pixi install --environment dev
         ;;
     "ubuntu")
         echo "🐧 Setting up Ubuntu desktop environment..."
-        pixi install --environment ubuntu-dev
+        pixi install --environment dev
         ;;
     "server")
         echo "🖥️  Setting up Linux server environment..."
-        pixi install --environment server
+        pixi install
         ;;
     *)
         echo "⚠️  Unknown machine type, using default environment..."
-        pixi install --environment default
+        pixi install
         ;;
 esac
 

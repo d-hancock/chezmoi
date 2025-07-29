@@ -4,10 +4,9 @@
 # This file configures Git globally for all repositories
 # Managed by ChezMoi and applied to ~/.gitconfig
 # Includes modern Git settings, aliases, and tool integrations
-# Template variables allow for dynamic configuration across machines
 
-{{- $email := promptStringOnce . "email" "Git email address" -}}
-{{- $name := promptStringOnce . "name" "Git full name" -}}
+{{- $email := .chezmoi.username | printf "%s@users.noreply.github.com" -}}
+{{- $name := .chezmoi.username | title -}}
 
 # ===================================================================
 # User Identity

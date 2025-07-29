@@ -14,11 +14,12 @@
 [project]
 name = "dotfiles-tools"
 channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "win-64"]
 
 # ===================================================================
-# Default Profile - Essential Tools
+# Default Dependencies - Essential Tools
 # ===================================================================
-[feature.default.dependencies]
+[dependencies]
 # Navigation & Search Tools
 fzf = "*"                # Fuzzy finder for files, commands, and more
 ripgrep = "*"            # Ultra-fast text search (replaces grep)
@@ -54,7 +55,7 @@ tealdeer = "*"           # Fast tldr client for quick help
 neovim = "*"             # Modern Vim with better defaults and Lua config
 
 # ===================================================================
-# Development Profile - Additional Dev Tools
+# Development Dependencies - Additional Dev Tools  
 # ===================================================================
 [feature.dev.dependencies]
 # Developer & Data Tools
@@ -100,13 +101,7 @@ lsof = "*"               # List open files and processes
 # Environment Definitions
 # ===================================================================
 [environments]
-default = ["default"]
-dev = ["default", "dev"]
-server = ["default", "server"]
-ubuntu = ["default", "ubuntu"]
-ubuntu-dev = ["default", "dev", "ubuntu"]
-wsl2 = ["default", "wsl2"]
-wsl2-dev = ["default", "dev", "wsl2"]
+dev = ["dev"]
 
 # ===================================================================
 # Installation Notes

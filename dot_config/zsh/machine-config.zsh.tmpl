@@ -3,7 +3,6 @@
 {{- if stat (joinPath .chezmoi.homeDir ".config/dotfiles/machine-type") -}}
 {{-   $machineType = include (joinPath .chezmoi.homeDir ".config/dotfiles/machine-type") | trim -}}
 {{- else -}}
-{{-   /* Detect machine type if file doesn't exist */ -}}
 {{-   if .chezmoi.kernel.osrelease | lower | contains "microsoft" -}}
 {{-     $machineType = "wsl2" -}}
 {{-   else if stat "/usr/bin/gnome-session" -}}
