@@ -1,17 +1,21 @@
 # ===================================================================
-# Global Git Configuration
+# Global Git Configuration - ChezMoi Managed
 # ===================================================================
 # This file configures Git globally for all repositories
 # Managed by ChezMoi and applied to ~/.gitconfig
 # Includes modern Git settings, aliases, and tool integrations
+# Template variables allow for dynamic configuration across machines
+
+{{- $email := promptStringOnce . "email" "Git email address" -}}
+{{- $name := promptStringOnce . "name" "Git full name" -}}
 
 # ===================================================================
 # User Identity
 # ===================================================================
-# Configure your identity for commits (REQUIRED - update these values)
+# Dynamic user configuration using ChezMoi prompts
 [user]
-  name = Your Name                    # Replace with your actual name
-  email = your.email@example.com      # Replace with your actual email
+  name = {{ $name }}                  # Your full name for commits
+  email = {{ $email }}                # Your email address for commits
 
 # ===================================================================
 # Core Settings

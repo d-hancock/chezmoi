@@ -16,16 +16,23 @@ This document tracks what has been implemented, what's currently in progress, an
 | **Shell Environment** | ✅ | ✅ | ⏳ | Ready |
 | **Terminal Setup** | ✅ | ✅ | ⏳ | Ready |
 | **Tool Management** | ✅ | ✅ | ⏳ | Ready |
-| **Git Integration** | ✅ | ✅ | ⏳ | Ready |
+| **SSH & Git Integration** | ✅ | ✅ | ⏳ | Ready |
 | **Documentation** | ✅ | ✅ | ✅ | Complete |
 
 ## ✅ Completed Features
 
 ### Core Infrastructure
 - [x] **ChezMoi Configuration** - `.chezmoi.toml` with source directory setup
-- [x] **Bootstrap Scripts** - Automated setup for tools, fonts, and directories
+- [x] **Bootstrap Scripts** - Automated setup for tools, fonts, directories, and SSH
 - [x] **Package Management** - Pixi integration with conda-forge ecosystem
 - [x] **Directory Structure** - XDG-compliant organization with clear separation
+
+### SSH & Security
+- [x] **SSH Key Management** - Platform-aware key generation (Ed25519)
+- [x] **SSH Configuration** - Secure defaults with connection multiplexing
+- [x] **SSH Agent Integration** - Auto-start and key loading in shell
+- [x] **Git SSH Integration** - GitHub/GitLab SSH host configuration
+- [x] **Cross-Platform Support** - Windows/Linux/WSL key handling
 
 ### Shell Environment
 - [x] **Zsh Configuration** - Complete setup with Zinit plugin manager

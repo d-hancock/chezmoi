@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# ===================================================================
+# ChezMoi Bootstrap Script - SSH Key Setup
+# ===================================================================
+# This script runs once when ChezMoi is first applied
+# It generates SSH keys if they don't exist and sets up proper permissions
+# Platform-aware key generation for cross-platform compatibility
+#
+# Execution: Automatically run by ChezMoi on first 'chezmoi apply'
+# Template: This is a .tmpl file, so it can use ChezMoi variables
+
+set -e  # Exit on any error
+
+{{- $isWSL := (and (eq .chezmoi.os "linux") ((.chezmoi.kernel.osrelease | lower) | contains "microsoft")) -}}
+{{- $isWindows := eq .chezmoi.os "windows" -}}
+{{- $isLinux := (and (eq .chezmoi.os "linux") (not $isWSL)) -}}
+{{- $email := .chezmoi.username }}@{{ .chezmoi.hostname }}
+
+echo "🔐 Setting up SSH keys and configuration..."
+
+# ===================================================================
+# SSH Directory Setup
+# ===================================================================
+SSH_DIR="$HOME/.ssh"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+
+# Create sockets directory for connection multiplexing
+mkdir -p "$SSH_DIR/sockets"
+chmod 700 "$SSH_DIR/sockets"
+
+echo "📁 SSH directory structure created"
+
+# ===================================================================
+# Platform-Specific Key Generation
+# ===================================================================
+{{- if $isWindows }}
+# Windows SSH key
+KEY_FILE="$SSH_DIR/id_ed25519_win"
+{{- else }}
+# Linux/WSL SSH key
+KEY_FILE="$SSH_DIR/id_ed25519"
+{{- end }}
+
+# Generate SSH key if it doesn't exist
+if [ ! -f "$KEY_FILE" ]; then
+    echo "🔑 Generating SSH key: $KEY_FILE"
+    ssh-keygen -t ed25519 -f "$KEY_FILE" -C "{{ $email }}" -N ""
+    echo "✅ SSH key generated successfully"
+else
+    echo "✅ SSH key already exists: $KEY_FILE"
+fi
+
+# ===================================================================
+# Set Proper Permissions
+# ===================================================================
+# SSH is very strict about file permissions for security
+echo "🔒 Setting SSH file permissions..."
+
+# Private key - only readable by owner
+chmod 600 "$KEY_FILE" 2>/dev/null || true
+
+# Public key - readable by owner and group
+chmod 644 "${KEY_FILE}.pub" 2>/dev/null || true
+
+# SSH config - only readable by owner
+chmod 600 "$SSH_DIR/config" 2>/dev/null || true
+
+# SSH directory - only accessible by owner
+chmod 700 "$SSH_DIR"
+
+echo "✅ SSH permissions configured"
+
+# ===================================================================
+# SSH Agent Setup
+# ===================================================================
+# Ensure SSH agent is running and key is loaded
+echo "🔧 Configuring SSH agent..."
+
+# Start SSH agent if not running
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)"
+    echo "✅ SSH agent started"
+else
+    echo "✅ SSH agent already running"
+fi
+
+# Add key to agent if it exists and agent is running
+if [ -n "$SSH_AUTH_SOCK" ] && [ -f "$KEY_FILE" ]; then
+    ssh-add "$KEY_FILE" 2>/dev/null || true
+    echo "✅ SSH key added to agent"
+fi
+
+# ===================================================================
+# Display Public Key
+# ===================================================================
+echo ""
+echo "🔑 Your SSH public key (for adding to GitHub/GitLab):"
+echo "----------------------------------------"
+cat "${KEY_FILE}.pub" 2>/dev/null || echo "Public key not found"
+echo "----------------------------------------"
+echo ""
+echo "📋 Copy the above key and add it to your Git hosting service:"
+{{- if $isWindows }}
+echo "   GitHub: https://github.com/settings/ssh/new"
+echo "   GitLab: https://gitlab.com/-/profile/keys"
+{{- else }}
+echo "   GitHub: https://github.com/settings/ssh/new"
+echo "   GitLab: https://gitlab.com/-/profile/keys"
+echo "   Or copy to clipboard: cat ~/.ssh/{{ if $isWindows }}id_ed25519_win{{ else }}id_ed25519{{ end }}.pub | {{ if eq .chezmoi.os "darwin" }}pbcopy{{ else }}xclip -selection clipboard{{ end }}"
+{{- end }}
+
+echo "🎉 SSH setup complete!"

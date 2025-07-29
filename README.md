@@ -73,11 +73,12 @@ pixi.toml                     # Pixi dependencies
 run_once_setup_tools.sh.tmpl  # Pixi + extra tools
 run_once_setup_fonts.sh.tmpl  # Nerd font installer
 run_once_setup_dirs.sh.tmpl   # Directory scaffolding
+run_once_setup_ssh_keys.sh.tmpl # SSH key generation and setup
 run_once_setup_wsl_compat.sh.tmpl  # WSL2/Terminal compatibility
 
 dot_zshrc.tmpl                # Zsh, Zinit, Starship
 dot_vimrc                     # Vim configuration
-dot_gitconfig                 # Git configuration with Vim integration
+dot_gitconfig.tmpl            # Git configuration with templates
 
 dot_config/
   nvim/
@@ -96,6 +97,10 @@ dot_config/
     terminal-compat.zsh       # Terminal/WSL2 compatibility
   fonts/
     README.md                 # Font installation guide
+
+dot_ssh/
+  config.tmpl                 # SSH client configuration
+  README.md                   # SSH setup documentation
 
 dot_local/
   bin/

@@ -142,6 +142,33 @@ command -v atuin >/dev/null && eval "$(atuin init zsh)"
 command -v mcfly >/dev/null && eval "$(mcfly init zsh)"
 
 # ===================================================================
+# SSH Agent Management
+# ===================================================================
+# Auto-start SSH agent and load keys for seamless Git operations
+# Only runs if SSH agent is not already running
+if [ -z "$SSH_AUTH_SOCK" ]; then
+  # Check for existing SSH agent
+  SSH_AGENT_PID_FILE="$XDG_RUNTIME_DIR/ssh-agent.pid"
+  SSH_AGENT_SOCK_FILE="$XDG_RUNTIME_DIR/ssh-agent.sock"
+  
+  if [ -f "$SSH_AGENT_PID_FILE" ] && [ -S "$SSH_AGENT_SOCK_FILE" ]; then
+    # Use existing agent
+    export SSH_AUTH_SOCK="$SSH_AGENT_SOCK_FILE"
+    export SSH_AGENT_PID="$(cat "$SSH_AGENT_PID_FILE")"
+  else
+    # Start new agent
+    eval "$(ssh-agent -s)" > /dev/null
+    echo "$SSH_AGENT_PID" > "$SSH_AGENT_PID_FILE"
+    echo "$SSH_AUTH_SOCK" > "$SSH_AGENT_SOCK_FILE"
+    
+    # Auto-load SSH keys
+    for key in ~/.ssh/id_ed25519 ~/.ssh/id_ed25519_win; do
+      [ -f "$key" ] && ssh-add "$key" 2>/dev/null
+    done
+  fi
+fi
+
+# ===================================================================
 # Modular Configuration Loading
 # ===================================================================
 # Load additional configuration files if they exist
