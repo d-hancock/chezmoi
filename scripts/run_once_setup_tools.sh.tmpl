@@ -109,16 +109,22 @@ cd "${CHEZMOI_SOURCE_DIR}"
 
 # Use a subshell to isolate PIXI_PROJECT_MANIFEST changes
 (
-    # Check for local pixi configurations in ChezMoi directory
-    if [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
+    # Prefer project-specific pixi.toml if present in current directory
+    if [[ -f "./pixi.local.toml" ]]; then
+        echo "📋 Found project-specific pixi configuration: ./pixi.local.toml"
+        PIXI_PROJECT_MANIFEST="$(pwd)/pixi.local.toml" pixi install --environment dev
+    elif [[ -f "./pixi.toml" ]]; then
+        echo "📋 Found project-specific pixi configuration: ./pixi.toml"
+        PIXI_PROJECT_MANIFEST="$(pwd)/pixi.toml" pixi install --environment dev
+    # Otherwise, fall back to ChezMoi's configuration
+    elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
         echo "📋 Found ChezMoi-specific pixi configuration: pixi.local.toml"
         PIXI_PROJECT_MANIFEST="$CHEZMOI_SOURCE_DIR/pixi.local.toml" pixi install --environment dev
     elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.toml" ]]; then
         echo "📋 Found ChezMoi pixi configuration: pixi.toml"
         PIXI_PROJECT_MANIFEST="$CHEZMOI_SOURCE_DIR/pixi.toml" pixi install --environment dev
     else
-        echo "📋 No ChezMoi pixi configuration found. Installing via default pixi behavior."
-        # Temporarily unset PIXI_PROJECT_MANIFEST to use local/default behavior
+        echo "📋 No pixi configuration found. Installing via default pixi behavior."
         unset PIXI_PROJECT_MANIFEST
         pixi install --environment dev
     fi
