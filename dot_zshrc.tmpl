@@ -63,28 +63,18 @@ zinit ice as"command" from"gh-r" \
 zinit light starship/starship
 
 # ===================================================================
-# Essential Zsh Plugins
+# Essential Zsh Plugins (Core Only)
 # ===================================================================
-# Load core plugins with lazy loading for better startup performance
-# "wait lucid" means plugins load after prompt is ready (non-blocking)
+# Load only the most essential plugins here for fast startup
+# Additional plugins are loaded via ~/.config/zsh/plugins.zsh
 
+# Fast syntax highlighting - must load early for best performance
 zinit wait lucid for \
   atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-    zdharma-continuum/fast-syntax-highlighting \  # Syntax highlighting as you type
-  blockf \
-    zsh-users/zsh-completions \                   # Additional completion definitions
-  atload"!_zsh_autosuggest_start" \
-    zsh-users/zsh-autosuggestions                 # Fish-like autosuggestions
+    zdharma-continuum/fast-syntax-highlighting
 
-# ===================================================================
-# Additional Useful Plugins
-# ===================================================================
-# Oh My Zsh library functions and plugins for enhanced functionality
-zinit wait lucid for \
-  OMZL::git.zsh \          # Git helper functions
-  OMZP::git \              # Git aliases and completion
-  OMZP::sudo \             # Double-tap ESC to prefix command with sudo
-  OMZP::command-not-found  # Suggests package installation for missing commands
+# Note: Other plugins (autosuggestions, completions, git, etc.) 
+# are loaded in ~/.config/zsh/plugins.zsh for better organization
 
 # ===================================================================
 # Shell History Configuration
