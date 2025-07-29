@@ -101,9 +101,14 @@ echo "📋 Synchronizing packages from pixi.toml..."
 # Use the source directory we already determined
 cd "${CHEZMOI_SOURCE_DIR}"
 
-# Install development profile (includes default + dev tools automatically)
-echo "🛠️  Installing development tools (includes default tools)..."
-pixi install --environment dev
+# Check for local pixi.toml file and prioritize it
+if [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
+    echo "📋 Found local pixi.toml file. Using it for package synchronization."
+    pixi install --file "$CHEZMOI_SOURCE_DIR/pixi.local.toml" --environment dev
+else
+    echo "📋 No local pixi.toml file found. Using default configuration."
+    pixi install --environment dev
+fi
 
 echo "✅ Pixi packages synchronized"
 
