@@ -10,8 +10,16 @@
 # - All Pixi-managed tools will be available when in this directory
 # - Environment deactivates automatically when you leave
 
-# Activate the Pixi development environment
-eval "$(pixi shell-hook --environment dev)"
-
-# Optional: Show environment info when activated
-echo "📦 Pixi environment 'dev' activated - $(pixi list --environment dev | wc -l) packages available"
+# Only activate Pixi environment if we're in the ChezMoi directory
+# This prevents global PIXI_PROJECT_MANIFEST from overriding other projects
+if [[ "$PWD" == "$(realpath ~/.local/share/chezmoi)" ]]; then
+    # Activate the Pixi development environment
+    eval "$(pixi shell-hook --environment dev)"
+    
+    # Optional: Show environment info when activated
+    echo "📦 Pixi environment 'dev' activated - $(pixi list --environment dev | wc -l) packages available"
+else
+    # We're in a subdirectory or different location, just ensure pixi is in PATH
+    # without setting project-specific environment variables
+    export PATH="$HOME/.pixi/bin:$PATH"
+fi
