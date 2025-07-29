@@ -133,6 +133,8 @@ vim.keymap.set('t', '<C-j>', '<C-\\><C-n><C-w>j', {desc = 'Terminal: move down'}
 vim.keymap.set('t', '<C-k>', '<C-\\><C-n><C-w>k', {desc = 'Terminal: move up'})
 vim.keymap.set('t', '<C-l>', '<C-\\><C-n><C-w>l', {desc = 'Terminal: move right'})
 
+-- Visual mode mappings
+vim.keymap.set('v', '.', ':norm.<CR>', {desc = 'Repeat last normal command on selection'})
 -- ===================================================================
 -- File Type Specific Settings
 -- ===================================================================
