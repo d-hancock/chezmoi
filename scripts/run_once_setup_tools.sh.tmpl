@@ -37,7 +37,16 @@ echo "🔗 Setting up ChezMoi binary access..."
 mkdir -p "$HOME/.local/bin"
 
 # Path to chezmoi binary in source directory
-CHEZMOI_BINARY="$(chezmoi source-path)/bin/chezmoi"
+# Use CHEZMOI_SOURCE_DIR if available (set by chezmoi during execution)
+# Otherwise fall back to the current script's parent directory
+if [[ -n "${CHEZMOI_SOURCE_DIR:-}" ]]; then
+    CHEZMOI_BINARY="${CHEZMOI_SOURCE_DIR}/bin/chezmoi"
+else
+    # Get the source directory from the script's location
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    CHEZMOI_SOURCE_DIR="$(dirname "$SCRIPT_DIR")"
+    CHEZMOI_BINARY="${CHEZMOI_SOURCE_DIR}/bin/chezmoi"
+fi
 
 # Check if binary exists
 if [[ -f "$CHEZMOI_BINARY" ]]; then
@@ -79,7 +88,8 @@ export PATH="$HOME/.pixi/bin:$PATH"
 # ===================================================================
 # Navigate to ChezMoi source directory and sync packages using profiles
 echo "📋 Synchronizing packages from pixi.toml..."
-cd "$(chezmoi source-path)"
+# Use the source directory we already determined
+cd "${CHEZMOI_SOURCE_DIR}"
 
 # Install development profile (includes default + dev tools automatically)
 echo "🛠️  Installing development tools (includes default tools)..."
@@ -282,3 +292,5 @@ if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
 fi
 
 echo "🎉 Tool setup complete!"
+
+echo "🚀 Setting up development tools..."
