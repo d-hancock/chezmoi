@@ -49,6 +49,10 @@ fi
 # ===================================================================
 # Provide unified clipboard commands across different environments
 
+# Unalias any existing clipboard commands to avoid conflicts
+unalias pbcopy 2>/dev/null || true
+unalias pbpaste 2>/dev/null || true
+
 # Primary: Use Windows clipboard if available (WSL2)
 if command -v clip.exe >/dev/null 2>&1; then
     pbcopy() { clip.exe; }
@@ -74,6 +78,9 @@ fi
 if [[ -n "$WSL_DISTRO_NAME" ]]; then
     # Add Windows system paths for convenience (optional)
     # export PATH="$PATH:/mnt/c/Windows/System32:/mnt/c/Windows"
+    
+    # Unalias any existing winpath to avoid conflicts
+    unalias winpath 2>/dev/null || true
     
     # Helper function to convert Windows paths to WSL paths
     winpath() {

@@ -139,7 +139,7 @@ alias chown='chown -c'                       # Report changes made
 # Archive and Compression
 # ===================================================================
 # Smart archive extraction function that detects file type
-alias extract='function _extract() { 
+extract() { 
   case $1 in 
     *.tar.gz|*.tgz) tar -xzf "$1" ;; 
     *.tar.bz2|*.tbz2) tar -xjf "$1" ;; 
@@ -149,7 +149,7 @@ alias extract='function _extract() {
     *.7z) 7z x "$1" ;; 
     *) echo "Unsupported format" ;; 
   esac 
-}; _extract'
+}
 
 # ===================================================================
 # Development and Testing

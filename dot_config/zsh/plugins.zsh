@@ -63,8 +63,10 @@ zinit light agkozak/zsh-z
 # Provides fuzzy search for files, history, processes
 if command -v fzf >/dev/null 2>&1; then
     # Disabled to avoid conflicts with main .zshrc FZF setup
-    # zinit light junegunn/fzf
-    # zinit light unixorn/fzf-zsh-plugin
+    # FZF integration and file management
+# NOTE: FZF is configured in dot_zshrc.tmpl - avoid duplicate integrations
+# zinit light junegunn/fzf  # DISABLED - using manual integration in .zshrc
+# zinit light unixorn/fzf-zsh-plugin  # DISABLED - conflicts with manual setup
     
     # FZF shell integration is handled in dot_zshrc.tmpl to ensure it's loaded correctly.
     echo "🔍 FZF available - shell integration loaded via .zshrc"

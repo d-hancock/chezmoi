@@ -134,7 +134,8 @@ alias install-deb='install_deb'
 alias restart-gnome='sudo systemctl restart gdm'
 
 {{- else if eq $machineType "wsl2" }}
-alias winpath='windows_path'
+# Note: winpath function is defined in terminal-compat.zsh, alias removed to avoid conflicts
+# alias winpath='windows_path'  # REMOVED - conflicts with terminal-compat.zsh function
 alias linuxpath='linux_path'
 alias open='open_in_windows'
 
