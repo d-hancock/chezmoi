@@ -2,7 +2,14 @@
 # ===================================================================
 # ChezMoi Bootstrap Script - Tool Installation
 # ===================================================================
-# This script runs once when ChezMoi is first applied
+# This script runs once when Che# Platform-specific clipboard tools (Linux/WSL specific)
+if [[ "$PLATFORM" == "linux" ]]; then
+    echo "🐧 Installing Linux-specific tools..."
+    install_fallback_tool "xclip" "xclip" || echo "⚠️  xclip installation failed, continuing..."
+    install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy" || echo "⚠️  wl-clipboard installation failed, continuing..."
+fi
+
+# Install build tools for potential compilation needss first applied
 # It installs Pixi package manager and synchronizes all CLI tools
 # defined in pixi.toml, plus fallback installations for tools
 # not available in conda-forge
@@ -225,40 +232,29 @@ install_fallback_tool() {
 }
 
 # Essential tools for ZSH configuration that commonly have conda-forge issues
-echo "🔧 Installing critical tools that may not be available via Pixi..."
+echo "🔧 Installing critical tools NOT managed by Pixi..."
 
-# Core tools needed for ZSH config
-install_fallback_tool "bat" "bat" || echo "⚠️  bat installation failed, continuing..."
-install_fallback_tool "fzf" "fzf" || echo "⚠️  fzf installation failed, continuing..."
-install_fallback_tool "ripgrep" "ripgrep" "rg" || echo "⚠️  ripgrep installation failed, continuing..."
-install_fallback_tool "fd-find" "fd-find" "fd" || echo "⚠️  fd-find installation failed, continuing..."
+# NOTE: These tools are already managed by Pixi (defined in pixi.toml):
+# - fzf, bat, ripgrep (rg), fd-find, eza, btop, jq, starship, direnv, etc.
+# Only install tools here that are NOT available in conda-forge or have platform-specific issues
 
-# Handle fd-find symlink issue on Ubuntu/Debian
-if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
-    echo "🔗 Creating fd symlink for fdfind..."
-    mkdir -p "$HOME/.local/bin"
-    ln -sf "$(which fdfind)" "$HOME/.local/bin/fd"
-    echo "✅ fd symlink created"
+# Essential system tools that are typically not in conda-forge
+install_fallback_tool "git" "git" || echo "⚠️  git installation failed, continuing..."
+install_fallback_tool "curl" "curl" || echo "⚠️  curl installation failed, continuing..."
+install_fallback_tool "wget" "wget" || echo "⚠️  wget installation failed, continuing..."
+install_fallback_tool "unzip" "unzip" || echo "⚠️  unzip installation failed, continuing..."
+
+# Platform-specific clipboard tools (Linux/WSL specific)
+if [[ "$PLATFORM" == "linux" ]]; then
+    echo "� Installing Linux-specific tools..."
+    install_fallback_tool "xclip" "xclip" || echo "⚠️  xclip installation failed, continuing..."
+    install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy" || echo "⚠️  wl-clipboard installation failed, continuing..."
 fi
-
-# Additional modern CLI tools
-install_fallback_tool "eza" "eza"
-install_fallback_tool "btop" "btop"
-
-# Install development tools that are essential
-echo "🛠️  Installing essential development tools..."
-install_fallback_tool "git" "git"
-install_fallback_tool "curl" "curl"
-install_fallback_tool "wget" "wget"
-install_fallback_tool "unzip" "unzip"
-install_fallback_tool "jq" "jq"
-echo "DEBUG: Finished essential development tools."
 
 # Install build tools for potential compilation needs
 if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-    install_fallback_tool "build-essential" "build-essential" "gcc"
+    install_fallback_tool "build-essential" "build-essential" "gcc" || echo "⚠️  build-essential installation failed, continuing..."
 fi
-echo "DEBUG: Finished build tools."
 
 echo "✅ Fallback tools installation complete"
 
@@ -267,9 +263,12 @@ echo "✅ Fallback tools installation complete"
 # ===================================================================
 echo "🔍 Verifying critical tools and fixing permissions..."
 
-CRITICAL_TOOLS=("bat" "fzf" "rg" "fd" "git" "jq" "chezmoi")
+# Update tool list to focus on tools that should be available after Pixi + fallback installs
+CRITICAL_TOOLS=("git" "curl" "chezmoi")
+PIXI_MANAGED_TOOLS=("fzf" "rg" "fd" "bat" "jq" "eza" "starship")
 MISSING_TOOLS=()
 
+# Check system tools (git, curl, etc.)
 for tool in "${CRITICAL_TOOLS[@]}"; do
     if command -v "$tool" >/dev/null 2>&1; then
         echo "✅ $tool: available"
@@ -290,6 +289,20 @@ for tool in "${CRITICAL_TOOLS[@]}"; do
     fi
 done
 
+# Check Pixi-managed tools (only when in Pixi environment)
+if [[ -n "$PIXI_PROJECT_ROOT" ]]; then
+    echo "📦 Checking Pixi-managed tools..."
+    for tool in "${PIXI_MANAGED_TOOLS[@]}"; do
+        if command -v "$tool" >/dev/null 2>&1; then
+            echo "✅ $tool: available (Pixi)"
+        else
+            echo "❌ $tool: missing from Pixi environment"
+        fi
+    done
+else
+    echo "⚠️  Not in Pixi environment - Pixi tools may not be available until direnv activates"
+fi
+
 # Fix permissions for any user binaries in ~/.local/bin
 if [[ -d "$HOME/.local/bin" ]]; then
     echo "🔧 Ensuring all user binaries have execute permissions..."
@@ -304,9 +317,12 @@ fi
 
 if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo ""
-    echo "⚠️  Some critical tools are missing: ${MISSING_TOOLS[*]}"
-    echo "💡 Your ZSH configuration may have errors until these are installed"
-    echo "   Try: sudo apt install ${MISSING_TOOLS[*]}"
+    echo "⚠️  Some critical system tools are missing: ${MISSING_TOOLS[*]}"
+    echo "💡 Install them manually with: sudo apt install ${MISSING_TOOLS[*]}"
+    echo ""
+    echo "📦 Note: Modern CLI tools (fzf, bat, rg, eza, etc.) are managed by Pixi"
+    echo "   They are available when the Pixi environment is active (via direnv)"
+    echo "   Run 'direnv allow' in the ChezMoi directory to enable automatic activation"
 fi
 
 # ===================================================================

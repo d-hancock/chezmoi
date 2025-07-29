@@ -108,11 +108,8 @@ EOF
     echo "  Created Docker completion fallback"
 fi
 
-# Install bat if not available and pixi is present
-if ! command -v bat >/dev/null 2>&1 && command -v pixi >/dev/null 2>&1; then
-    echo "🦇 Installing bat via Pixi..."
-    pixi add bat || echo "  Failed to install bat, continuing..."
-fi
+# Note: bat is managed by Pixi (pixi.toml), not installed here individually
+# If you need bat immediately, ensure Pixi environment is active with direnv
 
 # Fix shell history permissions
 echo "📚 Fixing shell history..."
@@ -165,6 +162,6 @@ echo "✅ ZSH fixes applied! Please restart your shell or run 'exec zsh' to relo
 echo ""
 echo "If you still see issues, try:"
 echo "  1. Run 'exec zsh' to reload the shell"
-echo "  2. Check 'pixi add fzf bat' to install missing tools"  
+echo "  2. Ensure you're in the ChezMoi directory for Pixi tools (direnv)"
 echo "  3. Run 'zinit update' to update plugins"
 echo "  4. Test 'cza' (chezmoi apply) to apply your dotfiles configuration"
