@@ -53,7 +53,7 @@ config.use_dead_keys = false                -- Disable dead keys for faster typi
 -- ===================================================================
 -- Tab bar appearance and behavior
 config.hide_tab_bar_if_only_one_tab = true  -- Clean interface when only one tab
-config.tab_bar_at_bottom = false            # Tab bar at top
+config.tab_bar_at_bottom = false            -- Tab bar at top
 config.use_fancy_tab_bar = true             -- Use styled tab bar
 
 -- ===================================================================
@@ -146,6 +146,8 @@ config.ssh_domains = {
 -- Set environment variables for the terminal
 config.set_environment_variables = {
   TERM = 'wezterm',                -- Set TERM for better compatibility
+  -- Enable WezTerm detection for shell integration
+  WEZTERM_EXECUTABLE = wezterm.executable_dir,
 }
 
 -- ===================================================================

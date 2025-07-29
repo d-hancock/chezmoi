@@ -37,6 +37,7 @@ $python\
 $docker_context\
 $conda\
 $env_var.DOTFILES_MACHINE_INDICATOR\
+$custom.pixi\
 [](fg:color_bg3 bg:color_bg1)\
 $time\
 [ ](fg:color_bg1)\
@@ -256,8 +257,16 @@ disabled = true              # Don't show package.json version in every Node pro
 # Custom Pixi Environment Display
 # Shows active Pixi environment name when inside a Pixi project
 [custom.pixi]
-command = "echo $PIXI_ENVIRONMENT_NAME"    # Get environment name from env var
-when = '[ "$PIXI_ENVIRONMENT_NAME" ]'      # Only show when variable is set
+command = """sh -c '
+  if [ -f "pixi.toml" ]; then
+    if [ -n "$PIXI_ENVIRONMENT_NAME" ]; then
+      echo "$PIXI_ENVIRONMENT_NAME"
+    else
+      echo "default"
+    fi
+  fi
+'"""
+when = '[ -f "pixi.toml" ]'                # Show when pixi.toml exists
 symbol = "🅿️ "                            # Pixi icon
 style = "bold blue"
 format = "[$symbol$output]($style) "
