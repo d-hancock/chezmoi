@@ -141,11 +141,15 @@ if command -v fzf >/dev/null 2>&1; then
         # Source fzf keybindings and completions
         source "${FZF_SHELL_PATH}/key-bindings.zsh" 2>/dev/null || true
         source "${FZF_SHELL_PATH}/completion.zsh" 2>/dev/null || true
+        echo "🔍 FZF available - shell integration loaded via .zshrc"
     else
         # If FZF shell files not found, just ensure basic FZF is available
         # This prevents errors when FZF is installed via package manager without shell integration
-        echo "⚠️  FZF shell integration files not found at $FZF_BASE/shell/" >&2
+        echo "⚠️  FZF shell integration files not found at ${FZF_BASE}/shell/" >&2
     fi
+else
+    # FZF not available
+    echo "ℹ️  FZF not found - install via pixi or package manager for enhanced search"
 fi
 
 # direnv - Per-directory environment variables

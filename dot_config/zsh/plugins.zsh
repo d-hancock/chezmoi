@@ -14,6 +14,13 @@
 # Set up error handling for plugin loading
 setopt local_options no_warn_create_global
 
+# Ensure zinit zi alias doesn't conflict with other commands
+# Some systems may have a 'zi' command that conflicts
+if command -v zi >/dev/null 2>&1 && ! alias zi >/dev/null 2>&1; then
+    # If zi command exists but no alias, disable zinit's zi alias
+    unalias zi 2>/dev/null || true
+fi
+
 # Function to safely load zinit plugins with error handling
 safe_zinit_load() {
     local plugin_type="$1"

@@ -27,7 +27,17 @@ if [[ -d /usr/share/zsh/vendor-completions ]]; then
     # Check for problematic completions and exclude them
     for compfile in /usr/share/zsh/vendor-completions/*; do
         if [[ -f "$compfile" ]] && [[ -r "$compfile" ]]; then
-            fpath+=("$(dirname "$compfile")")
+            # Skip known problematic completion files
+            case "$(basename "$compfile")" in
+                _docker) 
+                    # Skip docker completion if it's causing issues
+                    echo "⚠️  Skipping problematic Docker completion at $compfile" >&2
+                    continue
+                    ;;
+                *)
+                    fpath+=("$(dirname "$compfile")")
+                    ;;
+            esac
         fi
     done
 fi
