@@ -251,6 +251,7 @@ elif [[ "$PLATFORM" == "linux" ]]; then
     install_fallback_tool "xclip" "xclip"
     install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy"
 fi
+echo "DEBUG: Finished platform-specific tools."
 
 # Install development tools that are essential
 echo "🛠️  Installing essential development tools..."
@@ -259,11 +260,13 @@ install_fallback_tool "curl" "curl"
 install_fallback_tool "wget" "wget"
 install_fallback_tool "unzip" "unzip"
 install_fallback_tool "jq" "jq"
+echo "DEBUG: Finished essential development tools."
 
 # Install build tools for potential compilation needs
 if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
     install_fallback_tool "build-essential" "build-essential" "gcc"
 fi
+echo "DEBUG: Finished build tools."
 
 echo "✅ Fallback tools installation complete"
 
@@ -312,6 +315,28 @@ if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo "⚠️  Some critical tools are missing: ${MISSING_TOOLS[*]}"
     echo "💡 Your ZSH configuration may have errors until these are installed"
     echo "   Try: sudo apt install ${MISSING_TOOLS[*]}"
+fi
+
+# ===================================================================
+# Set Zsh as default shell
+# ===================================================================
+echo "🐚 Setting Zsh as the default shell..."
+if [[ "$SHELL" != *"/zsh"* ]]; then
+    if command -v zsh >/dev/null 2>&1; then
+        ZSH_PATH=$(which zsh)
+        echo "Changing default shell to Zsh ($ZSH_PATH)..."
+        # The chsh command may require a password
+        if chsh -s "$ZSH_PATH"; then
+            echo "✅ Default shell changed to Zsh."
+            echo "   Please log out and back in for the change to take effect."
+        else
+            echo "⚠️  Failed to change default shell. Please run 'chsh -s $ZSH_PATH' manually."
+        fi
+    else
+        echo "⚠️  Zsh is not installed. Cannot set as default shell."
+    fi
+else
+    echo "✅ Zsh is already the default shell."
 fi
 
 echo "🎉 Tool setup complete!"

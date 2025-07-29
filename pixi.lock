@@ -20,6 +20,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/eza-0.23.0-hb17b654_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fd-find-10.2.0-h8fae777_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fzf-0.65.0-hf1419bc_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gh-2.76.1-h76a2195_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/greenlet-3.2.3-py313h46c70d0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/icu-75.1-he02047a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/jq-1.8.1-h73b1eb8_0.conda
