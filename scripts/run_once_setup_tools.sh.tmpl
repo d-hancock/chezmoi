@@ -249,11 +249,12 @@ install_fallback_tool "curl" "curl" || echo "⚠️  curl installation failed, c
 install_fallback_tool "wget" "wget" || echo "⚠️  wget installation failed, continuing..."
 install_fallback_tool "unzip" "unzip" || echo "⚠️  unzip installation failed, continuing..."
 
-# Platform-specific clipboard tools (Linux/WSL specific)
-if [[ "$PLATFORM" == "linux" ]]; then
-    echo "� Installing Linux-specific tools..."
+# Platform-specific clipboard tools and terminal utilities (Linux/WSL specific)
+if [[ "$PLATFORM" == "linux" ]] || [[ "$PLATFORM" == "wsl2" ]]; then
+    echo "🐧 Installing Linux/WSL2-specific tools..."
     install_fallback_tool "xclip" "xclip" || echo "⚠️  xclip installation failed, continuing..."
     install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy" || echo "⚠️  wl-clipboard installation failed, continuing..."
+    install_fallback_tool "xterm" "xterm" "resize" || echo "⚠️  xterm installation failed, continuing..."
 fi
 
 # Install build tools for potential compilation needs

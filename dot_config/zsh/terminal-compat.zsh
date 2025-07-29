@@ -53,22 +53,22 @@ fi
 unalias pbcopy 2>/dev/null || true
 unalias pbpaste 2>/dev/null || true
 
-# Primary: Use Windows clipboard if available (WSL2)
-if command -v clip.exe >/dev/null 2>&1; then
-    pbcopy() { clip.exe; }
-    pbpaste() { powershell.exe -command "Get-Clipboard" 2>/dev/null || echo ""; }
-# Fallback 1: Use xclip if available (X11/WSL2 with X server)
-elif command -v xclip >/dev/null 2>&1; then
-    pbcopy() { xclip -selection clipboard; }
-    pbpaste() { xclip -selection clipboard -o; }
-# Fallback 2: Use wl-clipboard for Wayland
-elif command -v wl-copy >/dev/null 2>&1; then
-    pbcopy() { wl-copy; }
-    pbpaste() { wl-paste; }
-# Fallback 3: Provide no-op functions with helpful messages
-else
-    pbcopy() { echo "No clipboard utility available. Install xclip, wl-clipboard, or use WSL2." >&2; }
-    pbpaste() { echo "No clipboard utility available. Install xclip, wl-clipboard, or use WSL2." >&2; }
+  # Primary: Use Windows clipboard if available (WSL2)
+  if command -v clip.exe >/dev/null 2>&1; then
+      pbcopy() { clip.exe; }
+      pbpaste() { powershell.exe -command "Get-Clipboard" 2>/dev/null || echo ""; }
+  # Fallback 1: Use wl-clipboard for Wayland
+  elif command -v wl-copy >/dev/null 2>&1; then
+      pbcopy() { wl-copy; }
+      pbpaste() { wl-paste; }
+  # Fallback 2: Use xclip if available (X11/WSL2 with X server)
+  elif command -v xclip >/dev/null 2>&1; then
+      pbcopy() { xclip -selection clipboard; }
+      pbpaste() { xclip -selection clipboard -o; }
+  # Fallback 3: Provide no-op functions with helpful messages
+  else
+      pbcopy() { echo "No clipboard utility available. Install xclip, wl-clipboard, or use WSL2." >&2; }
+      pbpaste() { echo "No clipboard utility available. Install xclip, wl-clipboard, or use WSL2." >&2; }
 fi
 
 # ===================================================================
@@ -115,7 +115,13 @@ fi
 trap 'echo "Shell interrupted"' INT
 
 # Handle terminal resize events properly
-trap 'eval $(resize)' WINCH 2>/dev/null || true
+# Check if resize command is available before using it
+if command -v resize >/dev/null 2>&1; then
+    trap 'eval $(resize)' WINCH 2>/dev/null || true
+else
+    # Fallback: Use stty to handle terminal resize if resize command is not available
+    trap 'stty size >/dev/null 2>&1' WINCH 2>/dev/null || true
+fi
 
 # ===================================================================
 # Environment Variable Compatibility

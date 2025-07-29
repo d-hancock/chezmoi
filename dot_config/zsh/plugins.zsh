@@ -53,6 +53,15 @@ zinit light zsh-users/zsh-completions
 # Press up/down to cycle through commands matching current input
 zinit light zsh-users/zsh-history-substring-search
 
+# Clipboard helpers — load early so other plugins can rely on them
+zinit light zpm-zsh/clipboard               # pbcopy / pbaste / clip
+
+# ZLE ↔ clipboard sync (vi/emacs keymaps + optional tmux support)
+zinit light kutsan/zsh-system-clipboard
+
+# optional: keep tmux copy-mode in sync when you live inside tmux
+# zinit light tmux-plugins/tmux-yank
+
 # Note: zsh-syntax-highlighting is loaded as fast-syntax-highlighting in main zshrc
 
 # ===================================================================

@@ -11,16 +11,11 @@ echo "🔧 Setting up WSL2 and terminal compatibility..."
 if [[ -n "$WSL_DISTRO_NAME" ]]; then
     echo "📟 WSL2 environment detected: $WSL_DISTRO_NAME"
     
-    # Install clipboard utilities for WSL2
+    # Install clipboard utilities and terminal tools for WSL2
     if command -v apt >/dev/null 2>&1; then
-        if ! command -v xclip >/dev/null 2>&1; then
-            echo "📋 Installing clipboard utilities..."
-            if sudo apt update && sudo apt install -y xclip wl-clipboard; then
-                echo "✅ Clipboard utilities installed"
-            else
-                echo "⚠️  Failed to install clipboard utilities"
-            fi
-        fi
+        echo "📋 Ensuring clipboard utilities and terminal tools available..."
+        sudo apt update -qq
+        sudo apt install -y xclip wl-clipboard xterm || echo "⚠️  Some installations failed"
     fi
     
     # Install wslu for better WSL integration (if not present)
@@ -37,23 +32,23 @@ if [[ -n "$WSL_DISTRO_NAME" ]]; then
 else
     echo "🐧 Standard Linux environment detected"
     
-    # Install clipboard utilities for standard Linux
+    # Install clipboard utilities and terminal tools for standard Linux
     if command -v apt >/dev/null 2>&1; then
         if ! command -v xclip >/dev/null 2>&1 && ! command -v wl-copy >/dev/null 2>&1; then
-            echo "📋 Installing clipboard utilities..."
+            echo "📋 Installing clipboard and terminal utilities..."
             if sudo apt update; then
                 # Try to detect if we're on Wayland or X11
                 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
-                    if sudo apt install -y wl-clipboard; then
-                        echo "✅ Wayland clipboard utilities installed"
+                    if sudo apt install -y wl-clipboard xterm; then
+                        echo "✅ Wayland clipboard and terminal utilities installed"
                     else
-                        echo "⚠️  Failed to install Wayland clipboard utilities"
+                        echo "⚠️  Failed to install some Wayland utilities"
                     fi
                 else
-                    if sudo apt install -y xclip; then
-                        echo "✅ X11 clipboard utilities installed"
+                    if sudo apt install -y xclip xterm; then
+                        echo "✅ X11 clipboard and terminal utilities installed"
                     else
-                        echo "⚠️  Failed to install X11 clipboard utilities"
+                        echo "⚠️  Failed to install some X11 utilities"
                     fi
                 fi
             else
