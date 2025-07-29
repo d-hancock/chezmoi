@@ -32,6 +32,8 @@ This repository provides a complete, reproducible development environment setup 
 2. The system automatically detects your machine type and installs appropriate tools
 3. Customize configurations and rerun `chezmoi apply` to update your environment
 
+**📖 For detailed setup and usage instructions, see the [User Guide](docs/user-guide.md)**
+
 See [Machine-Specific Setup](docs/machine-specific-setup.md) for details on supported environments.
 
 ---
