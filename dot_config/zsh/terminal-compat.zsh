@@ -51,16 +51,16 @@ fi
 
 # Primary: Use Windows clipboard if available (WSL2)
 if command -v clip.exe >/dev/null 2>&1; then
-    alias pbcopy='clip.exe'
-    alias pbpaste='powershell.exe -command "Get-Clipboard" 2>/dev/null || echo ""'
+    pbcopy() { clip.exe; }
+    pbpaste() { powershell.exe -command "Get-Clipboard" 2>/dev/null || echo ""; }
 # Fallback 1: Use xclip if available (X11/WSL2 with X server)
 elif command -v xclip >/dev/null 2>&1; then
-    alias pbcopy='xclip -selection clipboard'
-    alias pbpaste='xclip -selection clipboard -o'
+    pbcopy() { xclip -selection clipboard; }
+    pbpaste() { xclip -selection clipboard -o; }
 # Fallback 2: Use wl-clipboard for Wayland
 elif command -v wl-copy >/dev/null 2>&1; then
-    alias pbcopy='wl-copy'
-    alias pbpaste='wl-paste'
+    pbcopy() { wl-copy; }
+    pbpaste() { wl-paste; }
 # Fallback 3: Provide no-op functions with helpful messages
 else
     pbcopy() { echo "No clipboard utility available. Install xclip, wl-clipboard, or use WSL2." >&2; }

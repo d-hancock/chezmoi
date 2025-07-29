@@ -59,12 +59,15 @@ zinit light zsh-users/zsh-history-substring-search
 zinit light agkozak/zsh-z
 
 # FZF integration for fuzzy finding and navigation
+# NOTE: FZF shell integration is handled in dot_zshrc.tmpl to avoid conflicts
 # Provides fuzzy search for files, history, processes
 if command -v fzf >/dev/null 2>&1; then
-    zinit light junegunn/fzf
-    zinit light unixorn/fzf-zsh-plugin
+    # Disabled to avoid conflicts with main .zshrc FZF setup
+    # zinit light junegunn/fzf
+    # zinit light unixorn/fzf-zsh-plugin
     
     # FZF shell integration is handled in dot_zshrc.tmpl to ensure it's loaded correctly.
+    echo "🔍 FZF available - shell integration loaded via .zshrc"
 elif command -v pixi >/dev/null 2>&1; then
     echo "💡 FZF not found. Consider installing with: pixi add fzf"
 fi
@@ -181,9 +184,9 @@ zinit light romkatv/zsh-defer
 # Moves files to trash instead of permanent deletion
 zinit light mattmc3/zsh-safe-rm
 
-# Suggest alias usage when full command is typed
+# Suggest alias usage when full command is typed - DISABLED FOR DEBUGGING
 # Reminds you to use aliases you've defined: "gst" instead of "git status"
-zinit light MichaelAquilina/zsh-you-should-use
+# zinit light MichaelAquilina/zsh-you-should-use
 
 # Navigate up directory hierarchy by name
 # Usage: bd <directory-name> to jump up to any parent directory
@@ -269,9 +272,9 @@ HISTORY_SUBSTRING_SEARCH_FUZZY=1
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-# You-should-use configuration
-YSU_MESSAGE_POSITION="after"
-YSU_HARDCORE=1
+# You-should-use configuration - DISABLED
+# YSU_MESSAGE_POSITION="after"
+# YSU_HARDCORE=1
 
 # Safe-rm configuration - protect important directories
 ZSH_SAFE_RM_OPTS="-I"
