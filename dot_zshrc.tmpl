@@ -118,10 +118,13 @@ setopt EXTENDED_GLOB           # Enable extended globbing patterns
 # FZF setup - Set path variable for proper initialization
 if command -v fzf >/dev/null 2>&1; then
     # Try to find the fzf installation directory.
-    # This is often in /usr/share/fzf or similar for package manager installs,
-    # or inside the git repo if installed manually.
+    # Priority: Pixi environment > system packages > manual installs
     FZF_BASE=""
-    if [[ -d "/usr/share/fzf" ]]; then
+    
+    # Check Pixi environment first (when direnv is active)
+    if [[ -n "$PIXI_PROJECT_ROOT" && -d "$PIXI_PROJECT_ROOT/.pixi/envs/dev/share/fzf" ]]; then
+        FZF_BASE="$PIXI_PROJECT_ROOT/.pixi/envs/dev/share/fzf"
+    elif [[ -d "/usr/share/fzf" ]]; then
         FZF_BASE="/usr/share/fzf"
     elif [[ -n "$FZF_PATH" && -d "$FZF_PATH" ]]; then
         FZF_BASE="$FZF_PATH"
@@ -136,8 +139,12 @@ if command -v fzf >/dev/null 2>&1; then
     if [[ -n "$FZF_BASE" && -f "$FZF_BASE/shell/key-bindings.zsh" ]]; then
         export FZF_SHELL_PATH="$FZF_BASE/shell"
         # Source fzf keybindings and completions
-        source "${FZF_SHELL_PATH}/key-bindings.zsh"
-        source "${FZF_SHELL_PATH}/completion.zsh"
+        source "${FZF_SHELL_PATH}/key-bindings.zsh" 2>/dev/null || true
+        source "${FZF_SHELL_PATH}/completion.zsh" 2>/dev/null || true
+    else
+        # If FZF shell files not found, just ensure basic FZF is available
+        # This prevents errors when FZF is installed via package manager without shell integration
+        echo "⚠️  FZF shell integration files not found at $FZF_BASE/shell/" >&2
     fi
 fi
 

@@ -12,6 +12,9 @@
 
 set -e  # Exit on any error
 
+# Add debug output to track the execution flow
+set -x  # Enable debug mode to print each command before execution
+
 echo "🚀 Setting up development tools..."
 
 # ===================================================================
@@ -242,17 +245,6 @@ fi
 install_fallback_tool "eza" "eza"
 install_fallback_tool "btop" "btop"
 
-# Install platform-specific tools
-if [[ "$PLATFORM" == "wsl2" ]]; then
-    echo "🪟 Installing WSL2-specific tools..."
-    install_fallback_tool "wslu" "wslu"
-elif [[ "$PLATFORM" == "linux" ]]; then
-    echo "🐧 Installing Linux-specific tools..."
-    install_fallback_tool "xclip" "xclip"
-    install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy"
-fi
-echo "DEBUG: Finished platform-specific tools."
-
 # Install development tools that are essential
 echo "🛠️  Installing essential development tools..."
 install_fallback_tool "git" "git"
@@ -340,3 +332,6 @@ else
 fi
 
 echo "🎉 Tool setup complete!"
+
+# Disable debug mode at the end of the script
+set +x  # Disable debug mode

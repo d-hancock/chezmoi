@@ -154,11 +154,18 @@ zinit snippet OMZ::plugins/command-not-found  # Suggests package installation fo
 # Docker command integration and aliases
 # Provides Docker-specific completions and shortcuts
 if command -v docker >/dev/null 2>&1; then
-    zinit snippet OMZ::plugins/docker
-    # Manually source completions if they exist, as zinit might not pick them up.
-    if [ -f "$ZINIT[SNIPPETS_DIR]/OMZ::plugins/docker/completions/_docker" ]; then
-      source "$ZINIT[SNIPPETS_DIR]/OMZ::plugins/docker/completions/_docker"
-    fi
+    # Load Docker plugin with error handling
+    zinit snippet OMZ::plugins/docker 2>/dev/null || {
+        echo "⚠️  Failed to load Docker plugin from OMZ, using fallback"
+        # Create a simple Docker completion fallback if the plugin fails
+        if ! command -v _docker >/dev/null 2>&1; then
+            # Simple Docker alias as fallback
+            alias dk='docker'
+            alias dkc='docker-compose'
+            alias dkps='docker ps'
+            alias dkimg='docker images'
+        fi
+    }
 fi
 
 # ===================================================================
