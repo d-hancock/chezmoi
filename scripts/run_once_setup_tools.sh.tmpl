@@ -107,36 +107,22 @@ echo "📋 Synchronizing packages from pixi.toml..."
 # Use the source directory we already determined
 cd "${CHEZMOI_SOURCE_DIR}"
 
-# Save current PIXI_PROJECT_MANIFEST if it exists to restore later
-ORIGINAL_PIXI_MANIFEST="${PIXI_PROJECT_MANIFEST:-}"
-
-# Check for local pixi configurations and respect existing setups
-LOCAL_PIXI_FILE=""
-if [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
-    LOCAL_PIXI_FILE="$CHEZMOI_SOURCE_DIR/pixi.local.toml"
-elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.toml" ]]; then
-    LOCAL_PIXI_FILE="$CHEZMOI_SOURCE_DIR/pixi.toml"
-fi
-
-# Only set PIXI_PROJECT_MANIFEST if we found a local config and it's not already set
-if [[ -n "$LOCAL_PIXI_FILE" && -z "$ORIGINAL_PIXI_MANIFEST" ]]; then
-    echo "📋 Found local pixi configuration: $(basename "$LOCAL_PIXI_FILE")"
-    export PIXI_PROJECT_MANIFEST="$LOCAL_PIXI_FILE"
-    pixi install --environment dev
-elif [[ -n "$ORIGINAL_PIXI_MANIFEST" ]]; then
-    echo "📋 Respecting existing PIXI_PROJECT_MANIFEST: $ORIGINAL_PIXI_MANIFEST"
-    pixi install --environment dev
-else
-    echo "📋 No local pixi configuration found. Using default pixi.toml if available."
-    pixi install --environment dev
-fi
-
-# Restore original PIXI_PROJECT_MANIFEST state
-if [[ -n "$ORIGINAL_PIXI_MANIFEST" ]]; then
-    export PIXI_PROJECT_MANIFEST="$ORIGINAL_PIXI_MANIFEST"
-else
-    unset PIXI_PROJECT_MANIFEST 2>/dev/null || true
-fi
+# Use a subshell to isolate PIXI_PROJECT_MANIFEST changes
+(
+    # Check for local pixi configurations in ChezMoi directory
+    if [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
+        echo "📋 Found ChezMoi-specific pixi configuration: pixi.local.toml"
+        PIXI_PROJECT_MANIFEST="$CHEZMOI_SOURCE_DIR/pixi.local.toml" pixi install --environment dev
+    elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.toml" ]]; then
+        echo "📋 Found ChezMoi pixi configuration: pixi.toml"
+        PIXI_PROJECT_MANIFEST="$CHEZMOI_SOURCE_DIR/pixi.toml" pixi install --environment dev
+    else
+        echo "📋 No ChezMoi pixi configuration found. Installing via default pixi behavior."
+        # Temporarily unset PIXI_PROJECT_MANIFEST to use local/default behavior
+        unset PIXI_PROJECT_MANIFEST
+        pixi install --environment dev
+    fi
+)
 
 echo "✅ Pixi packages synchronized"
 
