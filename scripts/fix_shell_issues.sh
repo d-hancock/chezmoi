@@ -62,7 +62,7 @@ if command -v fzf >/dev/null 2>&1; then
     for location in "${fzf_locations[@]}"; do
         if [[ -d "$location/shell" ]]; then
             echo "✅ Found FZF shell integration at: $location"
-            export FZF_BASE="$location"
+            echo "💡 Set FZF_BASE=\"$location\" in your shell config if needed"
             break
         fi
     done

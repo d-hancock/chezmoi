@@ -15,8 +15,11 @@ if [[ -n "$WSL_DISTRO_NAME" ]]; then
     if command -v apt >/dev/null 2>&1; then
         if ! command -v xclip >/dev/null 2>&1; then
             echo "📋 Installing clipboard utilities..."
-            sudo apt update
-            sudo apt install -y xclip wl-clipboard
+            if sudo apt update && sudo apt install -y xclip wl-clipboard; then
+                echo "✅ Clipboard utilities installed"
+            else
+                echo "⚠️  Failed to install clipboard utilities"
+            fi
         fi
     fi
     
@@ -24,7 +27,11 @@ if [[ -n "$WSL_DISTRO_NAME" ]]; then
     if ! command -v wslview >/dev/null 2>&1; then
         echo "🔗 Installing WSL utilities..."
         if command -v apt >/dev/null 2>&1; then
-            sudo apt install -y wslu
+            if sudo apt install -y wslu; then
+                echo "✅ WSL utilities installed"
+            else
+                echo "⚠️  Failed to install WSL utilities"
+            fi
         fi
     fi
 else
@@ -34,13 +41,23 @@ else
     if command -v apt >/dev/null 2>&1; then
         if ! command -v xclip >/dev/null 2>&1 && ! command -v wl-copy >/dev/null 2>&1; then
             echo "📋 Installing clipboard utilities..."
-            sudo apt update
-            
-            # Try to detect if we're on Wayland or X11
-            if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
-                sudo apt install -y wl-clipboard
+            if sudo apt update; then
+                # Try to detect if we're on Wayland or X11
+                if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+                    if sudo apt install -y wl-clipboard; then
+                        echo "✅ Wayland clipboard utilities installed"
+                    else
+                        echo "⚠️  Failed to install Wayland clipboard utilities"
+                    fi
+                else
+                    if sudo apt install -y xclip; then
+                        echo "✅ X11 clipboard utilities installed"
+                    else
+                        echo "⚠️  Failed to install X11 clipboard utilities"
+                    fi
+                fi
             else
-                sudo apt install -y xclip
+                echo "⚠️  Failed to update package list"
             fi
         fi
     fi

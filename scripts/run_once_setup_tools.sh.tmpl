@@ -2,14 +2,7 @@
 # ===================================================================
 # ChezMoi Bootstrap Script - Tool Installation
 # ===================================================================
-# This script runs once when Che# Platform-specific clipboard tools (Linux/WSL specific)
-if [[ "$PLATFORM" == "linux" ]]; then
-    echo "🐧 Installing Linux-specific tools..."
-    install_fallback_tool "xclip" "xclip" || echo "⚠️  xclip installation failed, continuing..."
-    install_fallback_tool "wl-clipboard" "wl-clipboard" "wl-copy" || echo "⚠️  wl-clipboard installation failed, continuing..."
-fi
-
-# Install build tools for potential compilation needss first applied
+# This script runs once when ChezMoi is first applied
 # It installs Pixi package manager and synchronizes all CLI tools
 # defined in pixi.toml, plus fallback installations for tools
 # not available in conda-forge
@@ -19,8 +12,9 @@ fi
 
 set -e  # Exit on any error
 
-# Add debug output to track the execution flow
-set -x  # Enable debug mode to print each command before execution
+# Temporarily enable debug output only for development/troubleshooting
+# Uncomment the next line if you need to debug this script
+# set -x
 
 echo "🚀 Setting up development tools..."
 
@@ -90,45 +84,31 @@ fi
 # ===================================================================
 # Environment Setup
 # ===================================================================
-# Ensure Pixi is available in current session
-export PATH="$HOME/.pixi/bin:$PATH"
+# Temporarily add Pixi to PATH for this script only (not exported globally)
+# The permanent PATH setup is handled by direnv and shell configuration
+PATH="$HOME/.pixi/bin:$PATH"
 
 # ===================================================================
 # Package Synchronization
 # ===================================================================
-# Synchronize packages using Pixi while respecting existing local configurations
-# Priority order:
-# 1. Existing PIXI_PROJECT_MANIFEST (from user/other tools)
-# 2. Local pixi.local.toml (ChezMoi-specific overrides)
-# 3. Local pixi.toml (standard Pixi configuration)
-# 4. Default Pixi behavior (global/fallback)
+# Install ChezMoi's pixi-managed tools by changing to the source directory
+# and letting Pixi handle project detection naturally.
+# Priority: pixi.local.toml (overrides) > pixi.toml (standard config)
 # Navigate to ChezMoi source directory and sync packages using profiles
 echo "📋 Synchronizing packages from pixi.toml..."
 # Use the source directory we already determined
 cd "${CHEZMOI_SOURCE_DIR}"
 
-# Use a subshell to isolate PIXI_PROJECT_MANIFEST changes
-(
-    # Prefer project-specific pixi.toml if present in current directory
-    if [[ -f "./pixi.local.toml" ]]; then
-        echo "📋 Found project-specific pixi configuration: ./pixi.local.toml"
-        PIXI_PROJECT_MANIFEST="$(pwd)/pixi.local.toml" pixi install --environment dev
-    elif [[ -f "./pixi.toml" ]]; then
-        echo "📋 Found project-specific pixi configuration: ./pixi.toml"
-        PIXI_PROJECT_MANIFEST="$(pwd)/pixi.toml" pixi install --environment dev
-    # Otherwise, fall back to ChezMoi's configuration
-    elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
-        echo "📋 Found ChezMoi-specific pixi configuration: pixi.local.toml"
-        PIXI_PROJECT_MANIFEST="$CHEZMOI_SOURCE_DIR/pixi.local.toml" pixi install --environment dev
-    elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.toml" ]]; then
-        echo "📋 Found ChezMoi pixi configuration: pixi.toml"
-        PIXI_PROJECT_MANIFEST="$CHEZMOI_SOURCE_DIR/pixi.toml" pixi install --environment dev
-    else
-        echo "📋 No pixi configuration found. Installing via default pixi behavior."
-        unset PIXI_PROJECT_MANIFEST
-        pixi install --environment dev
-    fi
-)
+# Check for ChezMoi-specific pixi configurations
+if [[ -f "pixi.local.toml" ]]; then
+    echo "📋 Found ChezMoi-specific override: pixi.local.toml"
+    pixi install --manifest-path pixi.local.toml --environment dev
+elif [[ -f "pixi.toml" ]]; then
+    echo "📋 Found ChezMoi pixi configuration: pixi.toml"
+    pixi install --environment dev
+else
+    echo "📋 No ChezMoi pixi configuration found. Skipping pixi package installation."
+fi
 
 echo "✅ Pixi packages synchronized"
 
@@ -374,5 +354,5 @@ fi
 
 echo "🎉 Tool setup complete!"
 
-# Disable debug mode at the end of the script
-set +x  # Disable debug mode
+# Note: Debug mode was not enabled for cleaner output
+# To enable debug mode for troubleshooting, uncomment 'set -x' at the top of this script

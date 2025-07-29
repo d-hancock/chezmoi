@@ -31,8 +31,12 @@ TEMP_FILE="/tmp/Monaspace.zip"
 EXTRACT_DIR="$FONT_DIR/Monaspace"
 
 echo "⬇️  Downloading Monaspace Nerd Font..."
-curl -L "$FONT_URL" -o "$TEMP_FILE"
-echo "✅ Download complete"
+if curl -L "$FONT_URL" -o "$TEMP_FILE"; then
+    echo "✅ Download complete"
+else
+    echo "❌ Download failed"
+    exit 1
+fi
 
 # ===================================================================
 # Font Installation
