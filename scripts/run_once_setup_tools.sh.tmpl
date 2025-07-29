@@ -202,10 +202,10 @@ install_fallback_tool() {
 echo "🔧 Installing critical tools that may not be available via Pixi..."
 
 # Core tools needed for ZSH config
-install_fallback_tool "bat" "bat"
-install_fallback_tool "fzf" "fzf" 
-install_fallback_tool "ripgrep" "ripgrep" "rg"
-install_fallback_tool "fd-find" "fd-find" "fd"
+install_fallback_tool "bat" "bat" || echo "⚠️  bat installation failed, continuing..."
+install_fallback_tool "fzf" "fzf" || echo "⚠️  fzf installation failed, continuing..."
+install_fallback_tool "ripgrep" "ripgrep" "rg" || echo "⚠️  ripgrep installation failed, continuing..."
+install_fallback_tool "fd-find" "fd-find" "fd" || echo "⚠️  fd-find installation failed, continuing..."
 
 # Handle fd-find symlink issue on Ubuntu/Debian
 if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
@@ -292,5 +292,3 @@ if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
 fi
 
 echo "🎉 Tool setup complete!"
-
-echo "🚀 Setting up development tools..."
