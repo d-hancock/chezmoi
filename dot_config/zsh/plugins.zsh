@@ -61,14 +61,10 @@ zinit light agkozak/zsh-z
 # FZF integration for fuzzy finding and navigation
 # Provides fuzzy search for files, history, processes
 if command -v fzf >/dev/null 2>&1; then
-    # Set FZF_PATH for proper initialization
-    export FZF_PATH="${FZF_PATH:-$(dirname $(dirname $(which fzf)))}"
-    
     zinit light junegunn/fzf
     zinit light unixorn/fzf-zsh-plugin
     
-    # Load FZF shell integration if available
-    [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+    # FZF shell integration is handled in dot_zshrc.tmpl to ensure it's loaded correctly.
 elif command -v pixi >/dev/null 2>&1; then
     echo "💡 FZF not found. Consider installing with: pixi add fzf"
 fi
@@ -159,6 +155,10 @@ zinit snippet OMZ::plugins/command-not-found  # Suggests package installation fo
 # Provides Docker-specific completions and shortcuts
 if command -v docker >/dev/null 2>&1; then
     zinit snippet OMZ::plugins/docker
+    # Manually source completions if they exist, as zinit might not pick them up.
+    if [ -f "$ZINIT[SNIPPETS_DIR]/OMZ::plugins/docker/completions/_docker" ]; then
+      source "$ZINIT[SNIPPETS_DIR]/OMZ::plugins/docker/completions/_docker"
+    fi
 fi
 
 # ===================================================================

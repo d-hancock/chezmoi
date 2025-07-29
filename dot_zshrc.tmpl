@@ -117,9 +117,28 @@ setopt EXTENDED_GLOB           # Enable extended globbing patterns
 
 # FZF setup - Set path variable for proper initialization
 if command -v fzf >/dev/null 2>&1; then
-    export FZF_PATH="${FZF_PATH:-$(dirname $(dirname $(which fzf)))}"
-    # Only source if the key-bindings file exists
-    [[ -f "${FZF_PATH}/shell/key-bindings.zsh" ]] && export FZF_SHELL_PATH="${FZF_PATH}/shell"
+    # Try to find the fzf installation directory.
+    # This is often in /usr/share/fzf or similar for package manager installs,
+    # or inside the git repo if installed manually.
+    FZF_BASE=""
+    if [[ -d "/usr/share/fzf" ]]; then
+        FZF_BASE="/usr/share/fzf"
+    elif [[ -n "$FZF_PATH" && -d "$FZF_PATH" ]]; then
+        FZF_BASE="$FZF_PATH"
+    else
+        # Fallback for manual git clones
+        fzf_dir=$(dirname $(dirname $(which fzf)) 2>/dev/null)
+        if [[ -d "$fzf_dir/shell" ]]; then
+            FZF_BASE="$fzf_dir"
+        fi
+    fi
+
+    if [[ -n "$FZF_BASE" && -f "$FZF_BASE/shell/key-bindings.zsh" ]]; then
+        export FZF_SHELL_PATH="$FZF_BASE/shell"
+        # Source fzf keybindings and completions
+        source "${FZF_SHELL_PATH}/key-bindings.zsh"
+        source "${FZF_SHELL_PATH}/completion.zsh"
+    fi
 fi
 
 # direnv - Per-directory environment variables
