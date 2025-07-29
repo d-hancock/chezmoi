@@ -96,18 +96,46 @@ export PATH="$HOME/.pixi/bin:$PATH"
 # ===================================================================
 # Package Synchronization
 # ===================================================================
+# Synchronize packages using Pixi while respecting existing local configurations
+# Priority order:
+# 1. Existing PIXI_PROJECT_MANIFEST (from user/other tools)
+# 2. Local pixi.local.toml (ChezMoi-specific overrides)
+# 3. Local pixi.toml (standard Pixi configuration)
+# 4. Default Pixi behavior (global/fallback)
 # Navigate to ChezMoi source directory and sync packages using profiles
 echo "📋 Synchronizing packages from pixi.toml..."
 # Use the source directory we already determined
 cd "${CHEZMOI_SOURCE_DIR}"
 
-# Check for local pixi.toml file and prioritize it
+# Save current PIXI_PROJECT_MANIFEST if it exists to restore later
+ORIGINAL_PIXI_MANIFEST="${PIXI_PROJECT_MANIFEST:-}"
+
+# Check for local pixi configurations and respect existing setups
+LOCAL_PIXI_FILE=""
 if [[ -f "$CHEZMOI_SOURCE_DIR/pixi.local.toml" ]]; then
-    echo "📋 Found local pixi.toml file. Using it for package synchronization."
-    pixi install --file "$CHEZMOI_SOURCE_DIR/pixi.local.toml" --environment dev
-else
-    echo "📋 No local pixi.toml file found. Using default configuration."
+    LOCAL_PIXI_FILE="$CHEZMOI_SOURCE_DIR/pixi.local.toml"
+elif [[ -f "$CHEZMOI_SOURCE_DIR/pixi.toml" ]]; then
+    LOCAL_PIXI_FILE="$CHEZMOI_SOURCE_DIR/pixi.toml"
+fi
+
+# Only set PIXI_PROJECT_MANIFEST if we found a local config and it's not already set
+if [[ -n "$LOCAL_PIXI_FILE" && -z "$ORIGINAL_PIXI_MANIFEST" ]]; then
+    echo "📋 Found local pixi configuration: $(basename "$LOCAL_PIXI_FILE")"
+    export PIXI_PROJECT_MANIFEST="$LOCAL_PIXI_FILE"
     pixi install --environment dev
+elif [[ -n "$ORIGINAL_PIXI_MANIFEST" ]]; then
+    echo "📋 Respecting existing PIXI_PROJECT_MANIFEST: $ORIGINAL_PIXI_MANIFEST"
+    pixi install --environment dev
+else
+    echo "📋 No local pixi configuration found. Using default pixi.toml if available."
+    pixi install --environment dev
+fi
+
+# Restore original PIXI_PROJECT_MANIFEST state
+if [[ -n "$ORIGINAL_PIXI_MANIFEST" ]]; then
+    export PIXI_PROJECT_MANIFEST="$ORIGINAL_PIXI_MANIFEST"
+else
+    unset PIXI_PROJECT_MANIFEST 2>/dev/null || true
 fi
 
 echo "✅ Pixi packages synchronized"
